@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #07080d;
+  --bg-secondary: #0b0d14;
+  --bg-surface: rgba(17, 19, 31, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.2);
+  --accent-cyan: #00f2fe;
+  --accent-blue: #4facfe;
+  --accent-purple: #8a2be2;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Emil Kowalski Custom Easing Curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #07080d;
+    color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom dark scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #07080d;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    border: 2px solid #07080d;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) #07080d;
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism primitives */
+  .glass-panel {
+    @apply backdrop-blur-md bg-white/[0.03] border border-white/10 shadow-2xl;
+  }
+
+  .glass-pill {
+    @apply backdrop-blur-sm bg-white/[0.06] border border-white/15 rounded-full;
+  }
+
+  /* Text gradient typography */
+  .text-gradient-cyan {
+    @apply bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-purple {
+    @apply bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* Subtle radial glow backgrounds */
+  .glow-cyan-subtle {
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(7, 8, 13, 0) 70%);
+  }
+
+  .glow-purple-subtle {
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(7, 8, 13, 0) 70%);
+  }
+}
