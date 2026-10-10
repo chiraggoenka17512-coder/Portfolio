@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { PROJECTS, SKILLS, PROFILE } from '@/data';
 import { cn } from '@/utils/cn';
+import { TiltCard } from '@/components/ui/TiltCard';
 
 // Emil Kowalski custom ease curve
 const EMIL_EASE = [0.23, 1, 0.32, 1] as const;
@@ -88,10 +89,11 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
         {/* =========================================================================
             TILE 1: LabelSense (Flagship Live AI App — 2 cols, 2 rows)
             ========================================================================= */}
-        <motion.article
+        <TiltCard
+          role="article"
           variants={cardVariants}
-          whileTap={{ scale: 0.985 }}
-          transition={{ duration: 0.16, ease: EMIL_EASE }}
+          spotlightColor="rgba(0, 242, 254, 0.16)"
+          maxTilt={5}
           className={cn(
             'group relative lg:col-span-2 lg:row-span-2 rounded-2xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden',
             'glass-panel bg-gradient-to-br from-cyan-950/20 via-white/[0.02] to-transparent',
@@ -210,15 +212,16 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
               </motion.button>
             </div>
           </div>
-        </motion.article>
+        </TiltCard>
 
         {/* =========================================================================
             TILE 2: ATL Inventory (Realtime Lab OS — 2 cols, 1 row)
             ========================================================================= */}
-        <motion.article
+        <TiltCard
+          role="article"
           variants={cardVariants}
-          whileTap={{ scale: 0.985 }}
-          transition={{ duration: 0.16, ease: EMIL_EASE }}
+          spotlightColor="rgba(245, 158, 11, 0.16)"
+          maxTilt={5}
           className={cn(
             'group relative lg:col-span-2 lg:row-span-1 rounded-2xl p-6 sm:p-7 flex flex-col justify-between overflow-hidden',
             'glass-panel bg-gradient-to-br from-amber-950/20 via-white/[0.02] to-transparent',
@@ -280,15 +283,16 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
               <ArrowUpRight className="w-3.5 h-3.5" />
             </motion.button>
           </div>
-        </motion.article>
+        </TiltCard>
 
         {/* =========================================================================
             TILE 3: Cartograph (Spatial & Graph Mapping — 1 col, 1 row)
             ========================================================================= */}
-        <motion.article
+        <TiltCard
+          role="article"
           variants={cardVariants}
-          whileTap={{ scale: 0.985 }}
-          transition={{ duration: 0.16, ease: EMIL_EASE }}
+          spotlightColor="rgba(168, 85, 247, 0.16)"
+          maxTilt={6}
           className={cn(
             'group relative lg:col-span-1 lg:row-span-1 rounded-2xl p-6 flex flex-col justify-between overflow-hidden',
             'glass-panel bg-gradient-to-br from-purple-950/25 via-white/[0.02] to-transparent',
@@ -348,15 +352,16 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
               <ArrowUpRight className="w-3.5 h-3.5" />
             </motion.button>
           </div>
-        </motion.article>
+        </TiltCard>
 
         {/* =========================================================================
             TILE 4: School & Core Learning Stack (1 col, 1 row)
             ========================================================================= */}
-        <motion.article
+        <TiltCard
+          role="article"
           variants={cardVariants}
-          whileTap={{ scale: 0.985 }}
-          transition={{ duration: 0.16, ease: EMIL_EASE }}
+          spotlightColor="rgba(16, 185, 129, 0.16)"
+          maxTilt={6}
           className={cn(
             'group relative lg:col-span-1 lg:row-span-1 rounded-2xl p-6 flex flex-col justify-between overflow-hidden',
             'glass-panel bg-gradient-to-br from-indigo-950/25 via-white/[0.02] to-emerald-950/15',
@@ -402,7 +407,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
             <span>Kolkata, India</span>
             <span className="text-emerald-400 font-semibold">Active Builder</span>
           </div>
-        </motion.article>
+        </TiltCard>
       </div>
     </motion.section>
   );
