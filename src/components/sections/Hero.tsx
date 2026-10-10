@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Code2, MapPin, Sparkles } from 'lucide-react';
-import { InteractiveGlobe } from '@/components/canvas/InteractiveGlobe';
 import { cn } from '@/utils/cn';
+
+const InteractiveGlobe = React.lazy(() => import('@/components/canvas/InteractiveGlobe'));
 
 // Emil Kowalski custom ease curve
 const EMIL_EASE = [0.23, 1, 0.32, 1] as const;
@@ -191,7 +192,18 @@ export const Hero: React.FC = () => {
             className="aspect-square w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[460px] relative flex items-center justify-center"
             aria-label="3D Spatial Globe Canvas Viewport"
           >
-            <InteractiveGlobe />
+            <React.Suspense
+              fallback={
+                <div
+                  aria-hidden="true"
+                  className="aspect-square w-full rounded-full glow-cyan-subtle animate-pulse-slow border border-cyan-500/10 flex items-center justify-center"
+                >
+                  <div className="w-24 h-24 rounded-full border border-cyan-400/20 animate-ping opacity-25" />
+                </div>
+              }
+            >
+              <InteractiveGlobe />
+            </React.Suspense>
           </div>
         </motion.div>
       </div>
