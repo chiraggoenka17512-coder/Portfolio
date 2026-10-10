@@ -96,4 +96,22 @@
   .glow-purple-subtle {
     background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(7, 8, 13, 0) 70%);
   }
+
+  /* Hardware-accelerated continuous tech marquee */
+  @keyframes marquee {
+    0% {
+      transform: translate3d(0%, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+    will-change: transform;
+  }
 }
+

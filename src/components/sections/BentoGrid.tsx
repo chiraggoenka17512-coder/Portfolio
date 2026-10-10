@@ -347,8 +347,9 @@ export const BentoGrid: React.FC<BentoGridProps> = ({ onSelectProject }) => {
             <motion.button
               onClick={() => onSelectProject?.(cartograph.id)}
               whileTap={{ scale: 0.97 }}
-              className="text-xs text-purple-300 hover:text-purple-200"
+              className="text-xs text-purple-300 hover:text-purple-200 inline-flex items-center gap-1 font-medium"
             >
+              <span>View Details</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </motion.button>
           </div>
