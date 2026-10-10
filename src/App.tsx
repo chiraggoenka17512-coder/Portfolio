@@ -4,6 +4,8 @@ import { ParticleGalaxy } from '@/components/canvas/ParticleGalaxy';
 import { Hero } from '@/components/sections/Hero';
 import { BentoGrid } from '@/components/sections/BentoGrid';
 import { TechMarquee } from '@/components/sections/TechMarquee';
+import { EducationTimeline } from '@/components/sections/EducationTimeline';
+import { ContactSection } from '@/components/sections/ContactSection';
 import { Modal } from '@/components/ui/Modal';
 import { PROJECTS } from '@/data';
 
@@ -26,6 +28,8 @@ export default function App() {
         <Hero />
         <BentoGrid onSelectProject={setSelectedProjectId} />
         <TechMarquee />
+        <EducationTimeline />
+        <ContactSection />
       </main>
 
       {/* Project Architectural Deep-Dive Modal */}
