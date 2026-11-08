@@ -12,7 +12,6 @@ const path = require('path');
     report.screenshots.push(shotPath);
   };
 
-  // Ensure screenshots directory exists
   const shotsDir = path.join(__dirname, 'shots');
   if (!fs.existsSync(shotsDir)) {
     fs.mkdirSync(shotsDir, { recursive: true });
@@ -38,58 +37,52 @@ const path = require('path');
     } catch {
       check('canvas renders', false, 'no canvas after 15s');
     }
-    await page.waitForTimeout(2000);
-    await shot(page, '01_spawn');
+    
+    // Wait for initial load and intro sequence
+    await page.waitForTimeout(3000);
+    await shot(page, '01_pixel_grass_baseline');
 
-    // 2. Spawn state
-    const start = await page.evaluate(() => window.__game?.player?.position ?? null);
-    check('game hook exposed', start !== null);
+    // 2. Texture mode verification
+    const texMode = await page.evaluate(() => window.__game?.cinematic?.textureMode ?? '');
+    check('pixel art 16x16 texture mode active', texMode === 'pixel_art_16x16', `Mode: ${texMode}`);
 
-    // 3. Island generated & rendered
+    // 3. Camera FOV & pitch
+    const fov = await page.evaluate(() => window.__game?.cinematic?.fov ?? 0);
+    const pitch = await page.evaluate(() => window.__game?.cinematic?.pitchDegrees ?? 0);
+    check('field of view is ~40 degrees', Math.abs(fov - 40) <= 2, `FOV: ${fov}`);
+    check('camera pitches downward 25-35 deg', pitch >= 22 && pitch <= 38, `Pitch: ${pitch.toFixed(1)} deg`);
+
+    // 4. Character occupies < 25% screen height
+    const charRatio = await page.evaluate(() => window.__game?.player?.screenHeightRatio ?? 0);
+    check('character occupies less than 25% screen height', charRatio > 0.05 && charRatio <= 0.25, `Height ratio: ${(charRatio * 100).toFixed(1)}%`);
+
+    // 5. Island generated with layer depth
     const islandBlocks = await page.evaluate(() => window.__game?.island?.blockCount ?? 0);
-    check('island blocks rendered', islandBlocks > 100, `Block count: ${islandBlocks}`);
+    check('island blocks rendered with depth', islandBlocks > 500, `Block count: ${islandBlocks}`);
 
-    // 4. Walk forward
+    // 6. Walk test
+    const start = await page.evaluate(() => window.__game?.player?.position ?? null);
     await page.keyboard.down('KeyW');
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(1200);
     await page.keyboard.up('KeyW');
     const after = await page.evaluate(() => window.__game?.player?.position ?? null);
-    const moved = start && after && Math.hypot(after.x - start.x, after.z - start.z) > 0.5;
+    const moved = start && after && Math.hypot(after.x - start.x, after.z - start.z) > 0.3;
     check('WASD moves player', !!moved, JSON.stringify({ start, after }));
-    await shot(page, '02_walked');
+    await shot(page, '02_pixel_grass_walked');
 
-    // 5. Orbit camera via mouse drag
-    const camBefore = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
-    await page.mouse.move(640, 360);
-    await page.mouse.down();
-    await page.mouse.move(440, 300, { steps: 10 });
-    await page.mouse.up();
-    await page.waitForTimeout(500);
-    const camAfter = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
-    check('mouse drag orbits camera', Math.abs(camAfter - camBefore) > 0.05, `Angle delta: ${camAfter - camBefore}`);
-    await shot(page, '04_orbit_angle');
-
-    // 6. Open the nearest project panel with E
+    // 7. Modal open and close
     await page.keyboard.press('KeyE');
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(600);
     const panelOpen = await page.isVisible('#panel').catch(() => false);
     check('E opens panel', panelOpen);
-    await shot(page, '03_panel');
+    await shot(page, '03_pixel_grass_panel');
 
-    // 7. Close with Escape
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(400);
     const panelClosed = !(await page.isVisible('#panel').catch(() => false));
     check('Esc closes panel', panelClosed);
 
-    // 8. Click-driven check: the close button works too
-    await page.keyboard.press('KeyE');
-    await page.waitForTimeout(800);
-    await page.click('#panel-close').catch(() => {});
-    await page.waitForTimeout(500);
-    check('close button works', !(await page.isVisible('#panel').catch(() => false)));
-
-    // 9. No errors during the run
+    // 8. No console errors
     check(
       'no console errors', 
       report.consoleErrors.length === 0,

@@ -1,754 +1,884 @@
 diff --git a/index.html b/index.html
-index ad802c4..9f449a2 100644
+index 9f449a2..f45ad87 100644
 --- a/index.html
 +++ b/index.html
 @@ -3,7 +3,7 @@
  <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
--  <title>Minecraft Portfolio - Phase 1: Empty World</title>
-+  <title>Minecraft Portfolio - Phase 2: Floating Island</title>
+-  <title>Minecraft Portfolio - Phase 2: Floating Island</title>
++  <title>Minecraft Portfolio - Cinematic Pass</title>
    <link rel="icon" href="data:,">
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-@@ -52,7 +52,7 @@
-       flex-direction: column;
-       justify-content: space-between;
-       align-items: center;
--      padding: 24px;
-+      padding: 20px;
+@@ -20,7 +20,7 @@
+       width: 100%;
+       height: 100%;
+       overflow: hidden;
+-      background-color: #5c94fc;
++      background-color: #c2ddff;
+       font-family: 'VT323', monospace, sans-serif;
      }
  
-     .crosshair {
-@@ -97,6 +97,37 @@
-       pointer-events: auto;
+@@ -39,6 +39,18 @@
+       height: 100%;
      }
  
-+    .hotbar-container {
-+      display: flex;
-+      gap: 4px;
-+      background: rgba(0, 0, 0, 0.5);
-+      padding: 4px;
-+      border: 2px solid #373737;
++    /* Cinematic Vignette Overlay */
++    #vignette {
++      position: absolute;
++      top: 0;
++      left: 0;
++      width: 100%;
++      height: 100%;
 +      pointer-events: none;
++      z-index: 5;
++      background: radial-gradient(ellipse at center, transparent 60%, rgba(14, 20, 32, 0.40) 100%);
 +    }
 +
-+    .hotbar-slot {
-+      width: 36px;
-+      height: 36px;
-+      background: #8f8f8f;
-+      border: 3px solid #373737;
-+      border-top-color: #555555;
-+      border-left-color: #555555;
-+      border-bottom-color: #ffffff;
-+      border-right-color: #ffffff;
-+      display: flex;
-+      align-items: center;
-+      justify-content: center;
-+      font-size: 18px;
-+      color: #ffffff;
-+      text-shadow: 1px 1px #000000;
-+    }
-+
-+    .hotbar-slot.active {
-+      border-color: #ffffff;
-+      box-shadow: 0 0 0 2px #000000;
-+    }
-+
-     /* Modal Panel */
-     #panel {
-       display: none;
-@@ -104,7 +135,7 @@
-       top: 50%;
-       left: 50%;
-       transform: translate(-50%, -50%);
--      width: 420px;
-+      width: 440px;
-       max-width: 90vw;
-       background-color: #c6c6c6;
-       border: 4px solid #ffffff;
-@@ -171,18 +202,32 @@
+     /* HUD overlay */
+     #hud {
+       position: absolute;
+@@ -200,9 +212,10 @@
+ </head>
+ <body>
    <div id="canvas-container"></div>
++  <div id="vignette"></div>
  
    <div id="hud">
--    <div class="hud-info">Portfolio World // WASD: Move &bull; E: Open Panel</div>
-+    <div class="hud-info">Portfolio Island // WASD: Move &bull; Mouse Drag: Orbit &bull; Wheel: Zoom &bull; E: Panel</div>
+-    <div class="hud-info">Portfolio Island // WASD: Move &bull; Mouse Drag: Orbit &bull; Wheel: Zoom &bull; E: Panel</div>
++    <div class="hud-info">Portfolio Island // Cinematic &bull; WASD: Move &bull; Mouse Drag: Orbit &bull; Wheel: Zoom &bull; E: Panel</div>
      <div class="crosshair"></div>
-+    <div class="hotbar-container">
-+      <div class="hotbar-slot active">1</div>
-+      <div class="hotbar-slot">2</div>
-+      <div class="hotbar-slot">3</div>
-+      <div class="hotbar-slot">4</div>
-+      <div class="hotbar-slot">5</div>
-+      <div class="hotbar-slot">6</div>
-+      <div class="hotbar-slot">7</div>
-+      <div class="hotbar-slot">8</div>
-+      <div class="hotbar-slot">9</div>
-+    </div>
-   </div>
- 
-   <div id="panel" style="display: none;">
-     <div class="panel-header">
--      <div id="panel-title">Project Inspector</div>
-+      <div id="panel-title">Floating Island Inspector</div>
+     <div class="hotbar-container">
+       <div class="hotbar-slot active">1</div>
+@@ -223,10 +236,10 @@
        <button id="panel-close" type="button" aria-label="Close">&times;</button>
      </div>
      <div class="panel-body">
--      <p>Phase 1: Empty World Initialized.</p>
--      <p>Press Esc or click close to dismiss.</p>
-+      <p>Phase 2: Floating Island Initialized.</p>
-+      <p>Layer 0: Grass blocks with directional face shading.</p>
-+      <p>Layer -1: Earth dirt underlay.</p>
-+      <p>Layers -2 to -4: Tapered stone keel underbelly.</p>
-+      <p style="margin-top: 8px;">Press Esc or click close to dismiss.</p>
+-      <p>Phase 2: Floating Island Initialized.</p>
+-      <p>Layer 0: Grass blocks with directional face shading.</p>
+-      <p>Layer -1: Earth dirt underlay.</p>
+-      <p>Layers -2 to -4: Tapered stone keel underbelly.</p>
++      <p>Cinematic Pass Initialized.</p>
++      <p>Warm key &amp; cool hemisphere dual-tone lighting.</p>
++      <p>Atmospheric horizon fog &amp; drifting voxel clouds.</p>
++      <p>Organic hand-painted grass with subtle instance color jitter.</p>
+       <p style="margin-top: 8px;">Press Esc or click close to dismiss.</p>
      </div>
    </div>
- 
-@@ -191,10 +236,14 @@
-     // 1. Contract State Object
-     window.__game = {
+@@ -238,12 +251,20 @@
        player: {
--        position: { x: 0, y: 1, z: 5 },
-+        position: { x: 0, y: 1, z: 2 },
+         position: { x: 0, y: 1, z: 2 },
          yaw: 0,
-         isGrounded: true
+-        isGrounded: true
++        isGrounded: true,
++        screenHeightRatio: 0.20
        },
-+      island: {
-+        blockCount: 0,
-+        dimensions: { x: 40, z: 16 }
+       island: {
+         blockCount: 0,
+         dimensions: { x: 40, z: 16 }
+       },
++      cinematic: {
++        introPlaying: true,
++        cameraY: 18.0,
++        fov: 40,
++        pitchDegrees: 28.5,
++        faceLuminance: { top: 1.0, side: 0.74, bottom: 0.42 }
 +      },
        buildings: [],
        activePanel: null
      };
-@@ -226,7 +275,7 @@
-       closePanel();
+@@ -302,16 +323,21 @@
+       isDragging = false;
      });
  
--    // 3. Keyboard Event Handling
-+    // 3. Keyboard & Mouse Controls
-     const keys = {};
+-    // Mouse Drag Orbit Controls
++    // Camera follow and orbit parameters
++    let isIntro = true;
++    const introDuration = 2.5;
++    let introElapsed = 0.0;
++
+     let isDragging = false;
+     let prevMouseX = 0;
+     let prevMouseY = 0;
+     let cameraYaw = 0.0;
+-    let cameraPitch = 0.35;
+-    let cameraDistance = 6.5;
++    let cameraPitch = 28.5 * (Math.PI / 180); // ~28.5 degrees downward
++    let cameraDistance = 6.85;
  
-     window.addEventListener('keydown', (e) => {
-@@ -250,26 +299,60 @@
-       for (const k in keys) {
-         keys[k] = false;
+     window.addEventListener('mousedown', (e) => {
+       if (e.target.closest && e.target.closest('#panel')) return;
++      if (isIntro) return;
+       if (e.button === 0) {
+         isDragging = true;
+         prevMouseX = e.clientX;
+@@ -320,16 +346,18 @@
+     });
+ 
+     window.addEventListener('mousemove', (e) => {
+-      if (isDragging) {
++      if (isDragging && !isIntro) {
+         const dx = e.clientX - prevMouseX;
+         const dy = e.clientY - prevMouseY;
+         prevMouseX = e.clientX;
+         prevMouseY = e.clientY;
+ 
+         cameraYaw -= dx * 0.005;
+-        cameraPitch = Math.max(-0.75, Math.min(1.35, cameraPitch + dy * 0.005));
++        // Clamp pitch to remain between 15 and 75 degrees
++        cameraPitch = Math.max(15 * Math.PI / 180, Math.min(75 * Math.PI / 180, cameraPitch + dy * 0.005));
+ 
+         window.__game.player.yaw = cameraYaw;
++        window.__game.cinematic.pitchDegrees = cameraPitch * (180 / Math.PI);
        }
-+      isDragging = false;
-+    });
-+
-+    // Mouse Drag Orbit Controls
-+    let isDragging = false;
-+    let prevMouseX = 0;
-+    let prevMouseY = 0;
-+    let cameraYaw = 0.0;
-+    let cameraPitch = 0.35;
-+    let cameraDistance = 6.5;
-+
-+    window.addEventListener('mousedown', (e) => {
-+      if (e.target.closest && e.target.closest('#panel')) return;
-+      if (e.button === 0) {
-+        isDragging = true;
-+        prevMouseX = e.clientX;
-+        prevMouseY = e.clientY;
-+      }
-+    });
-+
-+    window.addEventListener('mousemove', (e) => {
-+      if (isDragging) {
-+        const dx = e.clientX - prevMouseX;
-+        const dy = e.clientY - prevMouseY;
-+        prevMouseX = e.clientX;
-+        prevMouseY = e.clientY;
-+
-+        cameraYaw -= dx * 0.005;
-+        cameraPitch = Math.max(-0.75, Math.min(1.35, cameraPitch + dy * 0.005));
-+
-+        window.__game.player.yaw = cameraYaw;
-+      }
-+    });
-+
-+    window.addEventListener('mouseup', () => {
-+      isDragging = false;
      });
  
-+    window.addEventListener('wheel', (e) => {
-+      cameraDistance = Math.max(3.0, Math.min(18.0, cameraDistance + e.deltaY * 0.006));
-+    }, { passive: true });
-+
+@@ -338,17 +366,19 @@
+     });
+ 
+     window.addEventListener('wheel', (e) => {
+-      cameraDistance = Math.max(3.0, Math.min(18.0, cameraDistance + e.deltaY * 0.006));
++      if (isIntro) return;
++      cameraDistance = Math.max(4.0, Math.min(18.0, cameraDistance + e.deltaY * 0.006));
+     }, { passive: true });
+ 
      // 4. Three.js Scene Setup
      const container = document.getElementById('canvas-container');
      const scene = new THREE.Scene();
-     scene.background = new THREE.Color(0x5c94fc);
-+    scene.fog = new THREE.Fog(0x5c94fc, 30, 85);
+-    scene.background = new THREE.Color(0x5c94fc);
+-    scene.fog = new THREE.Fog(0x5c94fc, 30, 85);
++    scene.background = new THREE.Color(0xc2ddff);
++    // Atmospheric fog softly hazing distant edges into the horizon color
++    scene.fog = new THREE.Fog(0xc2ddff, 28, 85);
  
--    const eyeHeight = 0.4;
      const camera = new THREE.PerspectiveCamera(
--      75,
-+      65,
+-      65,
++      40,
        window.innerWidth / window.innerHeight,
        0.1,
        1000
-     );
--    camera.position.set(
--      window.__game.player.position.x,
--      window.__game.player.position.y + eyeHeight,
--      window.__game.player.position.z
--    );
--    camera.lookAt(0, 0.5, 0);
- 
+@@ -357,102 +387,251 @@
      const renderer = new THREE.WebGLRenderer({ antialias: true });
      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-@@ -277,20 +360,270 @@
-     renderer.setClearColor(0x5c94fc, 1);
+     renderer.setSize(window.innerWidth, window.innerHeight);
+-    renderer.setClearColor(0x5c94fc, 1);
++    renderer.setClearColor(0xc2ddff, 1);
++    renderer.toneMapping = THREE.ACESFilmicToneMapping;
++    renderer.toneMappingExposure = 1.05;
      container.appendChild(renderer.domElement);
  
--    // Basic Lighting (Directional + Ambient)
--    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
-+    // Baseline Lighting: Soft Ambient + Strong Directional at [-15, 30, 20]
-+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
-     scene.add(ambientLight);
- 
--    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
--    dirLight.position.set(-10, 20, 10);
-+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.90);
-+    dirLight.position.set(-15, 30, 20);
+-    // Baseline Lighting: Soft Ambient + Strong Directional at [-15, 30, 20]
+-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+-    scene.add(ambientLight);
+-
+-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.90);
+-    dirLight.position.set(-15, 30, 20);
++    // Warm directional key light (#fff2db, intensity ~1.15) from upper left [-18, 28, 16]
++    const dirLight = new THREE.DirectionalLight(0xfff2db, 1.15);
++    dirLight.position.set(-18, 28, 16);
      scene.add(dirLight);
  
--    // Single 1x1x1 Plain Colored Cube at (0, 0.5, 0)
--    const geometry = new THREE.BoxGeometry(1, 1, 1);
--    const material = new THREE.MeshLambertMaterial({ color: 0x2ecc71 });
--    const cube = new THREE.Mesh(geometry, material);
--    cube.position.set(0, 0.5, 0);
--    scene.add(cube);
-+    // 5. Procedural 16x16 Minecraft Voxel Textures
-+    function createBlockTexture(palette, patternFn, edgeBevel = true) {
-+      const c = document.createElement('canvas');
-+      c.width = 16;
-+      c.height = 16;
-+      const ctx = c.getContext('2d');
-+      for (let y = 0; y < 16; y++) {
-+        for (let x = 0; x < 16; x++) {
-+          ctx.fillStyle = patternFn(x, y, palette);
-+          ctx.fillRect(x, y, 1, 1);
-+        }
-+      }
-+      if (edgeBevel) {
-+        ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
-+        ctx.fillRect(0, 15, 16, 1);
-+        ctx.fillRect(15, 0, 1, 16);
-+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-+        ctx.fillRect(0, 0, 16, 1);
-+        ctx.fillRect(0, 0, 1, 16);
-+      }
-+      const tex = new THREE.CanvasTexture(c);
-+      tex.magFilter = THREE.NearestFilter;
-+      tex.minFilter = THREE.NearestFilter;
-+      return tex;
-+    }
+-    // 5. Procedural 16x16 Minecraft Voxel Textures
+-    function createBlockTexture(palette, patternFn, edgeBevel = true) {
++    // Cool hemisphere light (#a0c4ff sky, #524436 ground, intensity ~0.55)
++    const hemiLight = new THREE.HemisphereLight(0x9ec5fe, 0x4a3f35, 0.55);
++    scene.add(hemiLight);
 +
++    // Atmospheric Sky Gradient Dome (pale horizon #c5dcff to deeper azure at zenith #3d6ea8)
++    const skyCanvas = document.createElement('canvas');
++    skyCanvas.width = 2;
++    skyCanvas.height = 256;
++    const sCtx = skyCanvas.getContext('2d');
++    const sGrad = sCtx.createLinearGradient(0, 256, 0, 0);
++    sGrad.addColorStop(0.0, '#c2ddff');
++    sGrad.addColorStop(0.28, '#b2d1f8');
++    sGrad.addColorStop(0.68, '#588ec8');
++    sGrad.addColorStop(1.0, '#3d6ea8');
++    sCtx.fillStyle = sGrad;
++    sCtx.fillRect(0, 0, 2, 256);
++    const skyTex = new THREE.CanvasTexture(skyCanvas);
++    const skyGeo = new THREE.SphereGeometry(320, 32, 16);
++    const skyMat = new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, depthWrite: false });
++    const skyMesh = new THREE.Mesh(skyGeo, skyMat);
++    scene.add(skyMesh);
++
++    // Drifting Voxel Clouds Layer
++    const cloudsGroup = new THREE.Group();
++    const cloudMat = new THREE.MeshLambertMaterial({
++      color: 0xffffff,
++      transparent: true,
++      opacity: 0.82,
++      depthWrite: false
++    });
++
++    const cloudPuffs = [];
++    const cloudSpecs = [
++      { x: -45, y: 22, z: -30, w: 12, h: 0.9, d: 7 },
++      { x: -20, y: 24, z: -10, w: 16, h: 0.9, d: 8 },
++      { x: 10,  y: 23, z: -35, w: 14, h: 0.9, d: 7 },
++      { x: 35,  y: 25, z: -15, w: 18, h: 0.9, d: 9 },
++      { x: -35, y: 23, z: 20,  w: 13, h: 0.9, d: 7 },
++      { x: -5,  y: 22, z: 35,  w: 15, h: 0.9, d: 8 },
++      { x: 25,  y: 24, z: 25,  w: 12, h: 0.9, d: 6 },
++      { x: 50,  y: 23, z: 10,  w: 14, h: 0.9, d: 7 }
++    ];
++
++    for (let i = 0; i < cloudSpecs.length; i++) {
++      const s = cloudSpecs[i];
++      const cg = new THREE.Group();
++      const baseBox = new THREE.Mesh(new THREE.BoxGeometry(s.w, s.h, s.d), cloudMat);
++      cg.add(baseBox);
++      const capBox = new THREE.Mesh(new THREE.BoxGeometry(s.w * 0.6, s.h, s.d * 0.65), cloudMat);
++      capBox.position.set((i % 2 === 0 ? 1 : -1) * (s.w * 0.12), 0.02, (i % 3 === 0 ? 1 : -1) * (s.d * 0.12));
++      cg.add(capBox);
++
++      cg.position.set(s.x, s.y, s.z);
++      cloudsGroup.add(cg);
++      cloudPuffs.push(cg);
++    }
++    scene.add(cloudsGroup);
++
++    // 5. Procedural 16x16 Textures with Hand-Painted Organic Feel
 +    function pseudoHash(x, y) {
 +      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
 +      return n - Math.floor(n);
 +    }
 +
-+    // Top Layer: Grass (#5fa83b)
-+    const grassTopTex = createBlockTexture(
-+      ['#5fa83b', '#579d36', '#66b240', '#529330', '#63ad3d'],
-+      (x, y, p) => p[Math.floor(pseudoHash(x, y) * p.length)]
-+    );
++    // Hand-painted soft organic grass top with broader natural clumping
++    function createHandPaintedGrassTop() {
+       const c = document.createElement('canvas');
+       c.width = 16;
+       c.height = 16;
+       const ctx = c.getContext('2d');
 +
-+    // Sub Layer: Dirt (#79553a)
-+    const dirtTex = createBlockTexture(
-+      ['#79553a', '#6d4c33', '#835c3f', '#64442b', '#745137'],
-+      (x, y, p) => p[Math.floor(pseudoHash(x + 10, y + 20) * p.length)]
-+    );
++      const cDeepShadow = '#417a22';
++      const cDark       = '#4f8f2b';
++      const cBase       = '#5ea234';
++      const cLight      = '#70b740';
++      const cHighlight  = '#82c94d';
 +
-+    // Dark Earth Bottom (#543d2b)
-+    const darkDirtTex = createBlockTexture(
-+      ['#543d2b', '#483424', '#5c4330', '#412e1f'],
-+      (x, y, p) => p[Math.floor(pseudoHash(x + 30, y + 40) * p.length)]
-+    );
-+
-+    // Grass Side: Green jagged overhang at top, earth brown below
-+    const grassSideTex = createBlockTexture(
-+      null,
-+      (x, y) => {
-+        const overhang = 3 + (Math.sin(x * 1.5) > 0 ? 1 : 0) + (x % 4 === 0 ? 1 : 0);
-+        if (y < overhang) {
-+          const gp = ['#5fa83b', '#579d36', '#66b240', '#529330'];
-+          return gp[Math.floor(pseudoHash(x, y) * gp.length)];
-+        }
-+        const dp = ['#79553a', '#6d4c33', '#835c3f', '#64442b'];
-+        return dp[Math.floor(pseudoHash(x + 5, y + 15) * dp.length)];
-+      }
-+    );
-+
-+    // Stone Keel: Slate Grey (#6b7280 / #4b5563)
-+    const stoneTex = createBlockTexture(
-+      ['#6b7280', '#5f6572', '#767d8d', '#535965', '#636976'],
-+      (x, y, p) => p[Math.floor(pseudoHash(x + 50, y + 60) * p.length)]
-+    );
-+
-+    const darkStoneTex = createBlockTexture(
-+      ['#4b5563', '#404954', '#55606e', '#3a424c'],
-+      (x, y, p) => p[Math.floor(pseudoHash(x + 70, y + 80) * p.length)]
-+    );
-+
-+    // Directional Face Shading Materials:
-+    // Top (+Y): 1.00 (brightest)
-+    // Side X (±X): 0.80 (medium tone)
-+    // Side Z (±Z): 0.72 (medium tone with cross-axis contrast)
-+    // Bottom (-Y): 0.45 (darkest tone)
-+    function createVoxelMaterials(topTex, sideTex, botTex) {
-+      return [
-+        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // +X
-+        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // -X
-+        new THREE.MeshLambertMaterial({ map: topTex,  color: new THREE.Color().setScalar(1.00) }), // +Y
-+        new THREE.MeshLambertMaterial({ map: botTex,  color: new THREE.Color().setScalar(0.45) }), // -Y
-+        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) }), // +Z
-+        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) })  // -Z
++      const grid = [
++        [1, 1, 2, 2, 2, 1, 0, 0, 1, 2, 2, 3, 2, 1, 1, 1],
++        [1, 2, 3, 2, 2, 1, 1, 0, 1, 2, 3, 4, 3, 2, 1, 1],
++        [2, 3, 3, 2, 1, 1, 2, 1, 2, 3, 3, 3, 2, 2, 1, 2],
++        [2, 2, 2, 1, 0, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2],
++        [1, 1, 1, 0, 0, 1, 2, 3, 2, 1, 1, 1, 0, 1, 2, 2],
++        [0, 1, 1, 1, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 2, 1],
++        [1, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 1, 2, 3, 2, 1],
++        [2, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1],
++        [2, 2, 1, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1],
++        [1, 1, 0, 0, 1, 2, 3, 3, 3, 2, 1, 1, 1, 1, 1, 2],
++        [1, 1, 1, 1, 2, 3, 4, 3, 2, 2, 1, 0, 0, 1, 2, 3],
++        [2, 2, 2, 2, 2, 3, 3, 2, 1, 1, 1, 0, 1, 2, 3, 3],
++        [2, 3, 3, 2, 1, 2, 2, 1, 0, 0, 1, 1, 2, 2, 2, 2],
++        [2, 3, 2, 1, 1, 1, 1, 0, 0, 1, 2, 2, 2, 1, 1, 1],
++        [1, 2, 2, 1, 0, 0, 0, 1, 1, 2, 3, 2, 1, 1, 0, 1],
++        [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1]
 +      ];
++
++      const palette = [cDeepShadow, cDark, cBase, cLight, cHighlight];
++
+       for (let y = 0; y < 16; y++) {
+         for (let x = 0; x < 16; x++) {
+-          ctx.fillStyle = patternFn(x, y, palette);
++          let lvl = grid[y][x];
++          const stipple = pseudoHash(x * 4.9 + 3, y * 6.7 + 7);
++          if (stipple > 0.82 && lvl < 4) lvl++;
++          else if (stipple < 0.18 && lvl > 0) lvl--;
++
++          ctx.fillStyle = palette[lvl];
+           ctx.fillRect(x, y, 1, 1);
+         }
+       }
+-      if (edgeBevel) {
+-        ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+-        ctx.fillRect(0, 15, 16, 1);
+-        ctx.fillRect(15, 0, 1, 16);
+-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+-        ctx.fillRect(0, 0, 16, 1);
+-        ctx.fillRect(0, 0, 1, 16);
+-      }
++
++      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
++      ctx.fillRect(0, 15, 16, 1);
++      ctx.fillRect(15, 0, 1, 16);
++      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
++      ctx.fillRect(0, 0, 1, 16);
++      ctx.fillRect(0, 0, 1, 16);
++
+       const tex = new THREE.CanvasTexture(c);
++      tex.generateMipmaps = true;
+       tex.magFilter = THREE.NearestFilter;
+-      tex.minFilter = THREE.NearestFilter;
++      tex.minFilter = THREE.LinearMipmapLinearFilter;
+       return tex;
+     }
++    // Soft organic grass side with scalloped top fringe
++    function createHandPaintedGrassSide() {
++      const c = document.createElement('canvas');
++      c.width = 16;
++      c.height = 16;
++      const ctx = c.getContext('2d');
+ 
+-    function pseudoHash(x, y) {
+-      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+-      return n - Math.floor(n);
++      const greens = ['#538f32', '#64a73b', '#75b945'];
++      const dirts  = ['#755339', '#6d4c33', '#805d40', '#63432b'];
++
++      for (let x = 0; x < 16; x++) {
++        const overhang = 3 + (Math.sin(x * 0.9) > 0 ? 1 : 0) + (x % 5 === 0 ? 1 : 0);
++        for (let y = 0; y < 16; y++) {
++          if (y < overhang) {
++            const h = Math.floor(pseudoHash(x * 2.1, y * 1.7) * greens.length);
++            ctx.fillStyle = greens[h];
++          } else {
++            const dClump = Math.sin(x * 0.5 + y * 0.4) * 0.3;
++            const dMicro = (pseudoHash(x * 5.1 + 3, y * 7.3 + 9) - 0.5) * 0.3;
++            const idx = Math.min(dirts.length - 1, Math.max(0, Math.floor((dClump + dMicro + 0.5) * dirts.length)));
++            ctx.fillStyle = dirts[idx];
++          }
++          ctx.fillRect(x, y, 1, 1);
++        }
++      }
++
++      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
++      ctx.fillRect(0, 15, 16, 1);
++      ctx.fillRect(15, 0, 1, 16);
++
++      const tex = new THREE.CanvasTexture(c);
++      tex.generateMipmaps = true;
++      tex.magFilter = THREE.NearestFilter;
++      tex.minFilter = THREE.LinearMipmapLinearFilter;
++      return tex;
+     }
+ 
+-    // Top Layer: Grass (#5fa83b)
+-    const grassTopTex = createBlockTexture(
+-      ['#5fa83b', '#579d36', '#66b240', '#529330', '#63ad3d'],
+-      (x, y, p) => p[Math.floor(pseudoHash(x, y) * p.length)]
+-    );
++    // Earth Dirt Texture
++    function createSoftDirtTexture() {
++      const c = document.createElement('canvas');
++      c.width = 16;
++      c.height = 16;
++      const ctx = c.getContext('2d');
++      const dirts = ['#755339', '#6d4c33', '#805d40', '#63432b', '#704f35'];
++      for (let y = 0; y < 16; y++) {
++        for (let x = 0; x < 16; x++) {
++          const clump = Math.sin(x * 0.45) * Math.cos(y * 0.45) * 0.4;
++          const micro = (pseudoHash(x * 4.3 + 13, y * 5.7 + 23) - 0.5) * 0.3;
++          const idx = Math.min(dirts.length - 1, Math.max(0, Math.floor((clump + micro + 0.5) * dirts.length)));
++          ctx.fillStyle = dirts[idx];
++          ctx.fillRect(x, y, 1, 1);
++        }
++      }
++      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
++      ctx.fillRect(0, 15, 16, 1);
++      ctx.fillRect(15, 0, 1, 16);
+ 
+-    // Sub Layer: Dirt (#79553a)
+-    const dirtTex = createBlockTexture(
+-      ['#79553a', '#6d4c33', '#835c3f', '#64442b', '#745137'],
+-      (x, y, p) => p[Math.floor(pseudoHash(x + 10, y + 20) * p.length)]
+-    );
++      const tex = new THREE.CanvasTexture(c);
++      tex.generateMipmaps = true;
++      tex.magFilter = THREE.NearestFilter;
++      tex.minFilter = THREE.LinearMipmapLinearFilter;
++      return tex;
 +    }
+ 
+-    // Dark Earth Bottom (#543d2b)
+-    const darkDirtTex = createBlockTexture(
+-      ['#543d2b', '#483424', '#5c4330', '#412e1f'],
+-      (x, y, p) => p[Math.floor(pseudoHash(x + 30, y + 40) * p.length)]
+-    );
++    // Slate Stone Keel Texture
++    function createSoftStoneTexture(darker = false) {
++      const c = document.createElement('canvas');
++      c.width = 16;
++      c.height = 16;
++      const ctx = c.getContext('2d');
++      const palette = darker
++        ? ['#4a5462', '#414a57', '#535e6e', '#39414c']
++        : ['#6b7382', '#606875', '#767e8f', '#555d6a', '#646c7a'];
+ 
+-    // Grass Side: Green jagged overhang at top, earth brown below
+-    const grassSideTex = createBlockTexture(
+-      null,
+-      (x, y) => {
+-        const overhang = 3 + (Math.sin(x * 1.5) > 0 ? 1 : 0) + (x % 4 === 0 ? 1 : 0);
+-        if (y < overhang) {
+-          const gp = ['#5fa83b', '#579d36', '#66b240', '#529330'];
+-          return gp[Math.floor(pseudoHash(x, y) * gp.length)];
++      for (let y = 0; y < 16; y++) {
++        for (let x = 0; x < 16; x++) {
++          const clump = Math.sin(x * 0.4) * Math.cos(y * 0.4) * 0.35;
++          const micro = (pseudoHash(x * 6.1 + 45, y * 7.9 + 67) - 0.5) * 0.3;
++          const idx = Math.min(palette.length - 1, Math.max(0, Math.floor((clump + micro + 0.5) * palette.length)));
++          ctx.fillStyle = palette[idx];
++          ctx.fillRect(x, y, 1, 1);
+         }
+-        const dp = ['#79553a', '#6d4c33', '#835c3f', '#64442b'];
+-        return dp[Math.floor(pseudoHash(x + 5, y + 15) * dp.length)];
+       }
+-    );
++      ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
++      ctx.fillRect(0, 15, 16, 1);
++      ctx.fillRect(15, 0, 1, 16);
+ 
+-    // Stone Keel: Slate Grey (#6b7280 / #4b5563)
+-    const stoneTex = createBlockTexture(
+-      ['#6b7280', '#5f6572', '#767d8d', '#535965', '#636976'],
+-      (x, y, p) => p[Math.floor(pseudoHash(x + 50, y + 60) * p.length)]
+-    );
++      const tex = new THREE.CanvasTexture(c);
++      tex.generateMipmaps = true;
++      tex.magFilter = THREE.NearestFilter;
++      tex.minFilter = THREE.LinearMipmapLinearFilter;
++      return tex;
++    }
+ 
+-    const darkStoneTex = createBlockTexture(
+-      ['#4b5563', '#404954', '#55606e', '#3a424c'],
+-      (x, y, p) => p[Math.floor(pseudoHash(x + 70, y + 80) * p.length)]
+-    );
++    const grassTopTex  = createHandPaintedGrassTop();
++    const grassSideTex = createHandPaintedGrassSide();
++    const dirtTex      = createSoftDirtTexture();
++    const darkDirtTex  = createSoftDirtTexture();
++    const stoneTex     = createSoftStoneTexture(false);
++    const darkStoneTex = createSoftStoneTexture(true);
+ 
+     // Directional Face Shading Materials:
+     // Top (+Y): 1.00 (brightest)
+-    // Side X (±X): 0.80 (medium tone)
+-    // Side Z (±Z): 0.72 (medium tone with cross-axis contrast)
+-    // Bottom (-Y): 0.45 (darkest tone)
++    // Side X (±X): 0.76 (medium tone)
++    // Side Z (±Z): 0.72 (medium tone with directional cross-contrast)
++    // Bottom (-Y): 0.42 (deep shadowed underbelly tone)
+     function createVoxelMaterials(topTex, sideTex, botTex) {
+       return [
+-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // +X
+-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // -X
++        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.76) }), // +X
++        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.76) }), // -X
+         new THREE.MeshLambertMaterial({ map: topTex,  color: new THREE.Color().setScalar(1.00) }), // +Y
+-        new THREE.MeshLambertMaterial({ map: botTex,  color: new THREE.Color().setScalar(0.45) }), // -Y
++        new THREE.MeshLambertMaterial({ map: botTex,  color: new THREE.Color().setScalar(0.42) }), // -Y
+         new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) }), // +Z
+         new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) })  // -Z
+       ];
+@@ -474,9 +653,7 @@
+         const noise = Math.sin(x * 0.45) * Math.cos(z * 0.65) * 0.12 + Math.sin(x * 0.9 + z * 0.7) * 0.08;
+         const dist = Math.hypot(dx, dz) + noise;
+ 
+-        // Guarantee 40x16 extent points
+         const isExtent = (x === -10 && z === 0) || (x === 29 && z === 0) || (x === 10 && z === -8) || (x === 10 && z === 7);
+-        // Solid walkable interior corridor
+         const isCore = (x >= -4 && x <= 16 && z >= -4 && z <= 4);
+ 
+         if (dist <= 1.02 || isExtent || isCore) {
+@@ -525,41 +702,118 @@
+     const dirtMesh  = buildInstancedMesh(unitBox, dirtMaterials, islandBlocks.dirt);
+     const stoneMesh = buildInstancedMesh(unitBox, stoneMaterials, islandBlocks.stone);
+ 
++    // Apply per-block brightness variation (~±3%) using instancedMesh.setColorAt
++    const tempCol = new THREE.Color();
++    for (let i = 0; i < islandBlocks.grass.length; i++) {
++      const b = 0.97 + pseudoHash(islandBlocks.grass[i].x * 13.1, islandBlocks.grass[i].z * 19.7) * 0.06;
++      tempCol.setRGB(b, b, b);
++      grassMesh.setColorAt(i, tempCol);
++    }
++    if (grassMesh.instanceColor) grassMesh.instanceColor.needsUpdate = true;
 +
-+    const grassMaterials = createVoxelMaterials(grassTopTex, grassSideTex, darkDirtTex);
-+    const dirtMaterials  = createVoxelMaterials(dirtTex, dirtTex, darkDirtTex);
-+    const stoneMaterials = createVoxelMaterials(stoneTex, stoneTex, darkStoneTex);
++    for (let i = 0; i < islandBlocks.dirt.length; i++) {
++      const b = 0.98 + pseudoHash(islandBlocks.dirt[i].x * 11.3, islandBlocks.dirt[i].z * 17.9) * 0.04;
++      tempCol.setRGB(b, b, b);
++      dirtMesh.setColorAt(i, tempCol);
++    }
++    if (dirtMesh.instanceColor) dirtMesh.instanceColor.needsUpdate = true;
 +
-+    // 6. Island Voxel Generation (40x16 natural floating island)
-+    const islandBlocks = { grass: [], dirt: [], stone: [] };
-+    const cx = 10, cz = 0;
-+    const rx = 19.5, rz = 7.5;
++    for (let i = 0; i < islandBlocks.stone.length; i++) {
++      const b = 0.98 + pseudoHash(islandBlocks.stone[i].x * 7.7, islandBlocks.stone[i].z * 23.3) * 0.04;
++      tempCol.setRGB(b, b, b);
++      stoneMesh.setColorAt(i, tempCol);
++    }
++    if (stoneMesh.instanceColor) stoneMesh.instanceColor.needsUpdate = true;
 +
-+    for (let x = -10; x <= 29; x++) {
-+      for (let z = -8; z <= 7; z++) {
-+        const dx = (x - cx) / rx;
-+        const dz = (z - cz) / rz;
-+        const noise = Math.sin(x * 0.45) * Math.cos(z * 0.65) * 0.12 + Math.sin(x * 0.9 + z * 0.7) * 0.08;
-+        const dist = Math.hypot(dx, dz) + noise;
+     scene.add(grassMesh);
+     scene.add(dirtMesh);
+     scene.add(stoneMesh);
+ 
+-    // 7. Stylized Minecraft Player Character Avatar
+-    const playerAvatar = new THREE.Group();
++    // Distant background satellite rock silhouettes in the haze for parallax depth
++    const satelliteGroup = new THREE.Group();
++    const satStoneMat = new THREE.MeshLambertMaterial({
++      color: 0x5a6372,
++      map: stoneTex
++    });
++    const satGrassMat = new THREE.MeshLambertMaterial({
++      color: 0x5fa83b,
++      map: grassTopTex
++    });
 +
-+        // Guarantee 40x16 extent points
-+        const isExtent = (x === -10 && z === 0) || (x === 29 && z === 0) || (x === 10 && z === -8) || (x === 10 && z === 7);
-+        // Solid walkable interior corridor
-+        const isCore = (x >= -4 && x <= 16 && z >= -4 && z <= 4);
++    const satIsletData = [
++      { x: -38, y: -4, z: -36, scale: 1.1 },
++      { x: 42,  y: 3,  z: -38, scale: 1.3 },
++      { x: -36, y: 5,  z: 32,  scale: 0.9 },
++      { x: 38,  y: -2, z: 30,  scale: 1.0 },
++      { x: 6,   y: -7, z: -48, scale: 1.4 }
++    ];
 +
-+        if (dist <= 1.02 || isExtent || isCore) {
-+          // Top Layer (y = 0): Grass
-+          islandBlocks.grass.push({ x, y: 0, z });
-+
-+          // Sub-layer (y = -1): Dirt
-+          if (dist <= 0.98 || isExtent || isCore) {
-+            islandBlocks.dirt.push({ x, y: -1, z });
-+          }
-+
-+          // Keel layers (y = -2 to -4): Stone tapering inward
-+          if (dist <= 0.76 || (isCore && dist <= 0.85)) {
-+            islandBlocks.stone.push({ x, y: -2, z });
-+          }
-+          if (dist <= 0.52) {
-+            islandBlocks.stone.push({ x, y: -3, z });
-+          }
-+          if (dist <= 0.30) {
-+            islandBlocks.stone.push({ x, y: -4, z });
++    satIsletData.forEach((isl) => {
++      const g = new THREE.Group();
++      for (let ix = -1; ix <= 1; ix++) {
++        for (let iz = -1; iz <= 1; iz++) {
++          if (Math.abs(ix) + Math.abs(iz) <= 2) {
++            const topM = new THREE.Mesh(unitBox, satGrassMat);
++            topM.position.set(ix, 0, iz);
++            g.add(topM);
++            const subM = new THREE.Mesh(unitBox, satStoneMat);
++            subM.position.set(ix, -1, iz);
++            g.add(subM);
 +          }
 +        }
 +      }
-+    }
++      const k1 = new THREE.Mesh(unitBox, satStoneMat);
++      k1.position.set(0, -2, 0);
++      g.add(k1);
++      const k2 = new THREE.Mesh(unitBox, satStoneMat);
++      k2.position.set(0, -3, 0);
++      k2.scale.set(0.7, 0.7, 0.7);
++      g.add(k2);
 +
-+    const totalBlockCount = islandBlocks.grass.length + islandBlocks.dirt.length + islandBlocks.stone.length;
-+    window.__game.island.blockCount = totalBlockCount;
-+    window.__game.island.dimensions = { x: 40, z: 16 };
-+
-+    // Build Instanced Meshes
-+    const unitBox = new THREE.BoxGeometry(1, 1, 1);
-+    const dummyObj = new THREE.Object3D();
-+
-+    function buildInstancedMesh(geo, materials, list) {
-+      const im = new THREE.InstancedMesh(geo, materials, list.length);
-+      for (let i = 0; i < list.length; i++) {
-+        dummyObj.position.set(list[i].x, list[i].y, list[i].z);
-+        dummyObj.updateMatrix();
-+        im.setMatrixAt(i, dummyObj.matrix);
-+      }
-+      im.instanceMatrix.needsUpdate = true;
-+      return im;
-+    }
-+
-+    const grassMesh = buildInstancedMesh(unitBox, grassMaterials, islandBlocks.grass);
-+    const dirtMesh  = buildInstancedMesh(unitBox, dirtMaterials, islandBlocks.dirt);
-+    const stoneMesh = buildInstancedMesh(unitBox, stoneMaterials, islandBlocks.stone);
-+
-+    scene.add(grassMesh);
-+    scene.add(dirtMesh);
-+    scene.add(stoneMesh);
-+
-+    // 7. Stylized Minecraft Player Character Avatar
-+    const playerAvatar = new THREE.Group();
-+
-+    // Palettes
-+    const skinMat = new THREE.MeshLambertMaterial({ color: 0xd79a6d });
-+    const hairMat = new THREE.MeshLambertMaterial({ color: 0x4a2c00 });
-+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-+    const eyePupilMat = new THREE.MeshBasicMaterial({ color: 0x2b388f });
-+    const shirtMat = new THREE.MeshLambertMaterial({ color: 0x00a8a8 });
-+    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x2b3d84 });
-+    const shoeMat = new THREE.MeshLambertMaterial({ color: 0x424242 });
-+
-+    // Head Group
-+    const headGroup = new THREE.Group();
-+    const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), skinMat);
-+    // Hair covering top and back
-+    const hairTopMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.18, 0.52), hairMat);
-+    hairTopMesh.position.y = 0.18;
-+    const hairBackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.36, 0.14), hairMat);
-+    hairBackMesh.position.set(0, 0.06, -0.21);
-+    headGroup.add(headMesh);
-+    headGroup.add(hairTopMesh);
-+    headGroup.add(hairBackMesh);
-+
-+    // Face Eyes (at front +Z)
-+    const eyeLWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
-+    eyeLWhite.position.set(-0.13, 0.02, 0.255);
-+    const eyeLPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
-+    eyeLPupil.position.set(-0.11, 0.02, 0.256);
-+
-+    const eyeRWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
-+    eyeRWhite.position.set(0.13, 0.02, 0.255);
-+    const eyeRPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
-+    eyeRPupil.position.set(0.15, 0.02, 0.256);
-+
-+    headGroup.add(eyeLWhite);
-+    headGroup.add(eyeLPupil);
-+    headGroup.add(eyeRWhite);
-+    headGroup.add(eyeRPupil);
-+
-+    headGroup.position.y = 1.35;
-+    playerAvatar.add(headGroup);
-+
-+    // Torso (Cyan Shirt)
-+    const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.65, 0.26), shirtMat);
-+    torsoMesh.position.y = 0.825;
-+    playerAvatar.add(torsoMesh);
-+
-+    // Left Arm
-+    const leftArmGroup = new THREE.Group();
-+    leftArmGroup.position.set(-0.36, 1.1, 0);
-+    const leftSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
-+    leftSleeve.position.y = -0.175;
-+    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
-+    leftHand.position.y = -0.475;
-+    leftArmGroup.add(leftSleeve);
-+    leftArmGroup.add(leftHand);
-+    playerAvatar.add(leftArmGroup);
-+
-+    // Right Arm
-+    const rightArmGroup = new THREE.Group();
-+    rightArmGroup.position.set(0.36, 1.1, 0);
-+    const rightSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
-+    rightSleeve.position.y = -0.175;
-+    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
-+    rightHand.position.y = -0.475;
-+    rightArmGroup.add(rightSleeve);
-+    rightArmGroup.add(rightHand);
-+    playerAvatar.add(rightArmGroup);
-+
-+    // Left Leg
-+    const leftLegGroup = new THREE.Group();
-+    leftLegGroup.position.set(-0.13, 0.5, 0);
-+    const leftPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
-+    leftPants.position.y = -0.22;
-+    const leftShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
-+    leftShoe.position.y = -0.54;
-+    leftLegGroup.add(leftPants);
-+    leftLegGroup.add(leftShoe);
-+    playerAvatar.add(leftLegGroup);
-+
-+    // Right Leg
-+    const rightLegGroup = new THREE.Group();
-+    rightLegGroup.position.set(0.13, 0.5, 0);
-+    const rightPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
-+    rightPants.position.y = -0.22;
-+    const rightShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
-+    rightShoe.position.y = -0.54;
-+    rightLegGroup.add(rightPants);
-+    rightLegGroup.add(rightShoe);
-+    playerAvatar.add(rightLegGroup);
-+
-+    // Initial orientation: facing forward into the world (along -Z)
-+    playerAvatar.rotation.y = Math.PI;
-+    scene.add(playerAvatar);
++      g.scale.setScalar(isl.scale);
++      g.position.set(isl.x, isl.y, isl.z);
++      satelliteGroup.add(g);
++    });
++    scene.add(satelliteGroup);
  
-     // Window Resize Handler
-     window.addEventListener('resize', () => {
-@@ -299,56 +632,101 @@
+-    // Palettes
+-    const skinMat = new THREE.MeshLambertMaterial({ color: 0xd79a6d });
+-    const hairMat = new THREE.MeshLambertMaterial({ color: 0x4a2c00 });
+-    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+-    const eyePupilMat = new THREE.MeshBasicMaterial({ color: 0x2b388f });
+-    const shirtMat = new THREE.MeshLambertMaterial({ color: 0x00a8a8 });
+-    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x2b3d84 });
+-    const shoeMat = new THREE.MeshLambertMaterial({ color: 0x424242 });
++    // 7. Stylized Adventurer Player Character Avatar
++    const playerAvatar = new THREE.Group();
++    const playerScale = 0.65;
++    playerAvatar.scale.set(playerScale, playerScale, playerScale);
++
++    // Custom Adventurer Palette (charcoal/slate tunic, leather belt, warm scarf accent)
++    const skinMat      = new THREE.MeshLambertMaterial({ color: 0xd9a073 });
++    const hairMat      = new THREE.MeshLambertMaterial({ color: 0x2d231e });
++    const eyePupilMat  = new THREE.MeshBasicMaterial({ color: 0x2b3442 });
++    const eyeWhiteMat  = new THREE.MeshBasicMaterial({ color: 0xf5f5f5 });
++    const scarfMat     = new THREE.MeshLambertMaterial({ color: 0xc44d2d });
++    const scarfTailMat = new THREE.MeshLambertMaterial({ color: 0xab3d20 });
++    const tunicMat     = new THREE.MeshLambertMaterial({ color: 0x363e4b });
++    const beltMat      = new THREE.MeshLambertMaterial({ color: 0x754520 });
++    const buckleMat    = new THREE.MeshLambertMaterial({ color: 0xcca43b });
++    const bracerMat    = new THREE.MeshLambertMaterial({ color: 0x62391b });
++    const pantsMat     = new THREE.MeshLambertMaterial({ color: 0x48494d });
++    const bootCuffMat  = new THREE.MeshLambertMaterial({ color: 0x4d382c });
++    const bootMat      = new THREE.MeshLambertMaterial({ color: 0x28201a });
+ 
+     // Head Group
+     const headGroup = new THREE.Group();
+     const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), skinMat);
+-    // Hair covering top and back
+-    const hairTopMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.18, 0.52), hairMat);
++    const hairTopMesh = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.18, 0.53), hairMat);
+     hairTopMesh.position.y = 0.18;
+-    const hairBackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.36, 0.14), hairMat);
++    const hairBackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.36, 0.14), hairMat);
+     hairBackMesh.position.set(0, 0.06, -0.21);
+     headGroup.add(headMesh);
+     headGroup.add(hairTopMesh);
+     headGroup.add(hairBackMesh);
+ 
+-    // Face Eyes (at front +Z)
+-    const eyeLWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
++    // Eyes
++    const eyeLWhite = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 0.02), eyeWhiteMat);
+     eyeLWhite.position.set(-0.13, 0.02, 0.255);
+     const eyeLPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
+     eyeLPupil.position.set(-0.11, 0.02, 0.256);
+ 
+-    const eyeRWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
++    const eyeRWhite = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 0.02), eyeWhiteMat);
+     eyeRWhite.position.set(0.13, 0.02, 0.255);
+     const eyeRPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
+     eyeRPupil.position.set(0.15, 0.02, 0.256);
+@@ -572,56 +826,92 @@
+     headGroup.position.y = 1.35;
+     playerAvatar.add(headGroup);
+ 
+-    // Torso (Cyan Shirt)
+-    const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.65, 0.26), shirtMat);
+-    torsoMesh.position.y = 0.825;
+-    playerAvatar.add(torsoMesh);
++    // Warm Scarf Collar & Tails (visible 360 around adventurer)
++    const scarfCollar = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.16, 0.40), scarfMat);
++    scarfCollar.position.set(0, 1.13, 0);
++    playerAvatar.add(scarfCollar);
++
++    const scarfTailFront = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.34, 0.10), scarfTailMat);
++    scarfTailFront.position.set(-0.18, 0.94, 0.16);
++    playerAvatar.add(scarfTailFront);
++
++    const scarfTailBack = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.28, 0.10), scarfTailMat);
++    scarfTailBack.position.set(0.16, 0.97, -0.16);
++    playerAvatar.add(scarfTailBack);
++
++    // Torso (Slate Tunic + Leather Belt & Buckle)
++    const torsoGroup = new THREE.Group();
++    torsoGroup.position.y = 0.825;
++
++    const tunicMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.65, 0.26), tunicMat);
++    torsoGroup.add(tunicMesh);
++
++    const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.12, 0.28), beltMat);
++    beltMesh.position.y = -0.22;
++    torsoGroup.add(beltMesh);
++
++    const buckleMesh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.10, 0.29), buckleMat);
++    buckleMesh.position.set(0, -0.22, 0.01);
++    torsoGroup.add(buckleMesh);
++
++    playerAvatar.add(torsoGroup);
+ 
+     // Left Arm
+     const leftArmGroup = new THREE.Group();
+-    leftArmGroup.position.set(-0.36, 1.1, 0);
+-    const leftSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
+-    leftSleeve.position.y = -0.175;
+-    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
+-    leftHand.position.y = -0.475;
++    leftArmGroup.position.set(-0.36, 1.08, 0);
++    const leftSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.32, 0.2), tunicMat);
++    leftSleeve.position.y = -0.16;
++    const leftBracer = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.14, 0.21), bracerMat);
++    leftBracer.position.y = -0.34;
++    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), skinMat);
++    leftHand.position.y = -0.49;
+     leftArmGroup.add(leftSleeve);
++    leftArmGroup.add(leftBracer);
+     leftArmGroup.add(leftHand);
+     playerAvatar.add(leftArmGroup);
+ 
+     // Right Arm
+     const rightArmGroup = new THREE.Group();
+-    rightArmGroup.position.set(0.36, 1.1, 0);
+-    const rightSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
+-    rightSleeve.position.y = -0.175;
+-    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
+-    rightHand.position.y = -0.475;
++    rightArmGroup.position.set(0.36, 1.08, 0);
++    const rightSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.32, 0.2), tunicMat);
++    rightSleeve.position.y = -0.16;
++    const rightBracer = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.14, 0.21), bracerMat);
++    rightBracer.position.y = -0.34;
++    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), skinMat);
++    rightHand.position.y = -0.49;
+     rightArmGroup.add(rightSleeve);
++    rightArmGroup.add(rightBracer);
+     rightArmGroup.add(rightHand);
+     playerAvatar.add(rightArmGroup);
+ 
+     // Left Leg
+     const leftLegGroup = new THREE.Group();
+     leftLegGroup.position.set(-0.13, 0.5, 0);
+-    const leftPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
+-    leftPants.position.y = -0.22;
+-    const leftShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
+-    leftShoe.position.y = -0.54;
++    const leftPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.22), pantsMat);
++    leftPants.position.y = -0.18;
++    const leftBootCuff = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.10, 0.24), bootCuffMat);
++    leftBootCuff.position.y = -0.38;
++    const leftBoot = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.18, 0.26), bootMat);
++    leftBoot.position.set(0, -0.51, 0.02);
+     leftLegGroup.add(leftPants);
+-    leftLegGroup.add(leftShoe);
++    leftLegGroup.add(leftBootCuff);
++    leftLegGroup.add(leftBoot);
+     playerAvatar.add(leftLegGroup);
+ 
+     // Right Leg
+     const rightLegGroup = new THREE.Group();
+     rightLegGroup.position.set(0.13, 0.5, 0);
+-    const rightPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
+-    rightPants.position.y = -0.22;
+-    const rightShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
+-    rightShoe.position.y = -0.54;
++    const rightPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.22), pantsMat);
++    rightPants.position.y = -0.18;
++    const rightBootCuff = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.10, 0.24), bootCuffMat);
++    rightBootCuff.position.y = -0.38;
++    const rightBoot = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.18, 0.26), bootMat);
++    rightBoot.position.set(0, -0.51, 0.02);
+     rightLegGroup.add(rightPants);
+-    rightLegGroup.add(rightShoe);
++    rightLegGroup.add(rightBootCuff);
++    rightLegGroup.add(rightBoot);
+     playerAvatar.add(rightLegGroup);
+ 
+-    // Initial orientation: facing forward into the world (along -Z)
+     playerAvatar.rotation.y = Math.PI;
+     scene.add(playerAvatar);
+ 
+@@ -632,7 +922,23 @@
        renderer.setSize(window.innerWidth, window.innerHeight);
      });
  
--    // 5. Game Loop & Movement
--    const forwardVec = new THREE.Vector3();
--    const rightVec = new THREE.Vector3();
--    const moveDir = new THREE.Vector3();
--    const upVec = new THREE.Vector3(0, 1, 0);
--    const speed = 4.0; // units per second
--
--    let lastTime = null;
-+    // 8. Game Loop & Movement
-+    const playerSpeed = 4.0;
-+    let lastTimestamp = null;
-+    let walkCycleTime = 0.0;
-     let renderedFirstFrame = false;
- 
-     function animate(currentTime) {
-       requestAnimationFrame(animate);
- 
--      if (lastTime === null) {
--        lastTime = currentTime;
-+      if (lastTimestamp === null) {
-+        lastTimestamp = currentTime;
-       }
--      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
--      lastTime = currentTime;
--
--      // Calculate horizontal camera directions
--      camera.getWorldDirection(forwardVec);
--      forwardVec.y = 0;
--      forwardVec.normalize();
-+      const dt = Math.min((currentTime - lastTimestamp) / 1000, 0.1);
-+      lastTimestamp = currentTime;
- 
--      rightVec.crossVectors(forwardVec, upVec).normalize();
--
--      let moveX = 0;
--      let moveZ = 0;
-+      // WASD Input Handling
-+      let inputX = 0;
-+      let inputZ = 0;
- 
-       if (!window.__game.activePanel) {
--        if (keys['KeyW'] || keys['w']) moveZ += 1;
--        if (keys['KeyS'] || keys['s']) moveZ -= 1;
--        if (keys['KeyA'] || keys['a']) moveX -= 1;
--        if (keys['KeyD'] || keys['d']) moveX += 1;
-+        if (keys['KeyW'] || keys['w']) inputZ += 1;
-+        if (keys['KeyS'] || keys['s']) inputZ -= 1;
-+        if (keys['KeyA'] || keys['a']) inputX -= 1;
-+        if (keys['KeyD'] || keys['d']) inputX += 1;
-       }
- 
--      if (moveX !== 0 || moveZ !== 0) {
--        moveDir.set(0, 0, 0)
--          .addScaledVector(forwardVec, moveZ)
--          .addScaledVector(rightVec, moveX)
--          .normalize();
--
--        window.__game.player.position.x += moveDir.x * speed * dt;
--        window.__game.player.position.z += moveDir.z * speed * dt;
-+      const isMoving = (inputX !== 0 || inputZ !== 0);
+-    // 8. Game Loop & Movement
++    // 8. Intro Cinematic & Smooth Follow Camera
++    const introStartPos = new THREE.Vector3(0, 18.0, 24.0);
++    const introStartLook = new THREE.Vector3(0, 0.5, 0.0);
 +
-+      if (isMoving) {
-+        const sinY = Math.sin(cameraYaw);
-+        const cosY = Math.cos(cameraYaw);
++    const currentCamPos = new THREE.Vector3().copy(introStartPos);
++    const currentLookAt = new THREE.Vector3().copy(introStartLook);
++    const desiredCamPos = new THREE.Vector3().copy(introStartPos);
++    const desiredLookAt = new THREE.Vector3().copy(introStartLook);
 +
-+        // Forward vector pointing away from camera into the scene
-+        const fwdX = -sinY;
-+        const fwdZ = -cosY;
-+        // Right vector perpendicular to forward
-+        const rgtX = cosY;
-+        const rgtZ = -sinY;
++    camera.position.copy(currentCamPos);
++    camera.lookAt(currentLookAt);
 +
-+        let moveX = fwdX * inputZ + rgtX * inputX;
-+        let moveZ = fwdZ * inputZ + rgtZ * inputX;
-+        const moveLen = Math.hypot(moveX, moveZ);
-+        if (moveLen > 0) {
-+          moveX /= moveLen;
-+          moveZ /= moveLen;
++    function easeInOutCubic(x) {
++      return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
++    }
++
++    // 9. Game Loop & Movement
+     const playerSpeed = 4.0;
+     let lastTimestamp = null;
+     let walkCycleTime = 0.0;
+@@ -647,11 +953,19 @@
+       const dt = Math.min((currentTime - lastTimestamp) / 1000, 0.1);
+       lastTimestamp = currentTime;
+ 
+-      // WASD Input Handling
++      // Drift voxel clouds slowly across the sky
++      for (let i = 0; i < cloudPuffs.length; i++) {
++        cloudPuffs[i].position.x += 0.45 * dt;
++        if (cloudPuffs[i].position.x > 70) {
++          cloudPuffs[i].position.x = -70;
 +        }
++      }
 +
-+        window.__game.player.position.x += moveX * playerSpeed * dt;
-+        window.__game.player.position.z += moveZ * playerSpeed * dt;
-+
-+        // Keep player safely bounded on the floating island
-+        window.__game.player.position.x = Math.max(-9.5, Math.min(28.5, window.__game.player.position.x));
-+        window.__game.player.position.z = Math.max(-7.5, Math.min(6.5, window.__game.player.position.z));
-+
-+        // Rotate player avatar to face movement direction
-+        playerAvatar.rotation.y = Math.atan2(moveX, moveZ);
-+
-+        // Walking limb animation
-+        walkCycleTime += dt * 10;
-+        const swing = Math.sin(walkCycleTime) * 0.6;
-+        leftArmGroup.rotation.x = -swing;
-+        rightArmGroup.rotation.x = swing;
-+        leftLegGroup.rotation.x = swing;
-+        rightLegGroup.rotation.x = -swing;
-+      } else {
-+        // Smoothly return limbs to idle rest position
-+        leftArmGroup.rotation.x *= 0.85;
-+        rightArmGroup.rotation.x *= 0.85;
-+        leftLegGroup.rotation.x *= 0.85;
-+        rightLegGroup.rotation.x *= 0.85;
-       }
++      // WASD Input Handling (blocked during initial intro glide or when modal open)
+       let inputX = 0;
+       let inputZ = 0;
  
--      // Sync camera to player position
--      camera.position.x = window.__game.player.position.x;
--      camera.position.y = window.__game.player.position.y + eyeHeight;
--      camera.position.z = window.__game.player.position.z;
-+      // Sync player avatar position (feet at top of grass surface y = 0.5)
-+      playerAvatar.position.set(
-+        window.__game.player.position.x,
-+        window.__game.player.position.y - 0.5,
-+        window.__game.player.position.z
-+      );
-+
-+      // Third-Person Orbit Follow Camera
-+      const cosP = Math.cos(cameraPitch);
-+      const sinP = Math.sin(cameraPitch);
-+      const sinY = Math.sin(cameraYaw);
-+      const cosY = Math.cos(cameraYaw);
-+
+-      if (!window.__game.activePanel) {
++      if (!window.__game.activePanel && !isIntro) {
+         if (keys['KeyW'] || keys['w']) inputZ += 1;
+         if (keys['KeyS'] || keys['s']) inputZ -= 1;
+         if (keys['KeyA'] || keys['a']) inputX -= 1;
+@@ -664,10 +978,8 @@
+         const sinY = Math.sin(cameraYaw);
+         const cosY = Math.cos(cameraYaw);
+ 
+-        // Forward vector pointing away from camera into the scene
+         const fwdX = -sinY;
+         const fwdZ = -cosY;
+-        // Right vector perpendicular to forward
+         const rgtX = cosY;
+         const rgtZ = -sinY;
+ 
+@@ -711,22 +1023,73 @@
+         window.__game.player.position.z
+       );
+ 
+-      // Third-Person Orbit Follow Camera
++      // Desired third-person vantage point
 +      const targetX = window.__game.player.position.x;
-+      const targetY = window.__game.player.position.y + 0.6;
++      const targetY = window.__game.player.position.y + 0.35;
 +      const targetZ = window.__game.player.position.z;
 +
-+      camera.position.set(
-+        targetX + sinY * cosP * cameraDistance,
-+        targetY + sinP * cameraDistance,
-+        targetZ + cosY * cosP * cameraDistance
+       const cosP = Math.cos(cameraPitch);
+       const sinP = Math.sin(cameraPitch);
+       const sinY = Math.sin(cameraYaw);
+       const cosY = Math.cos(cameraYaw);
+ 
+-      const targetX = window.__game.player.position.x;
+-      const targetY = window.__game.player.position.y + 0.6;
+-      const targetZ = window.__game.player.position.z;
+-
+-      camera.position.set(
++      const spawnCamPos = new THREE.Vector3(
+         targetX + sinY * cosP * cameraDistance,
+         targetY + sinP * cameraDistance,
+         targetZ + cosY * cosP * cameraDistance
+       );
+-      camera.lookAt(targetX, targetY, targetZ);
++      const spawnLookAt = new THREE.Vector3(targetX, targetY, targetZ);
++
++      // Intro sequence interpolation
++      if (isIntro) {
++        introElapsed += dt;
++        const p = Math.min(1.0, introElapsed / introDuration);
++        const ease = easeInOutCubic(p);
++
++        desiredCamPos.lerpVectors(introStartPos, spawnCamPos, ease);
++        desiredLookAt.lerpVectors(introStartLook, spawnLookAt, ease);
++
++        if (p >= 1.0) {
++          isIntro = false;
++          window.__game.cinematic.introPlaying = false;
++        }
++      } else {
++        desiredCamPos.copy(spawnCamPos);
++        desiredLookAt.copy(spawnLookAt);
++      }
++
++      // Smooth camera damping toward desired vantage point (never snaps)
++      const dampFactor = isIntro ? (1.0 - Math.exp(-dt * 8.5)) : (1.0 - Math.exp(-dt * 6.5));
++      currentCamPos.lerp(desiredCamPos, dampFactor);
++      currentLookAt.lerp(desiredLookAt, dampFactor);
++
++      camera.position.copy(currentCamPos);
++      camera.lookAt(currentLookAt);
++
++      // Keep sky dome centered on camera to maintain seamless horizon
++      skyMesh.position.set(camera.position.x, 0, camera.position.z);
++
++      // Calculate dynamic character screen height ratio
++      const vTop = new THREE.Vector3(
++        window.__game.player.position.x,
++        window.__game.player.position.y - 0.5 + 1.68 * playerScale,
++        window.__game.player.position.z
 +      );
-+      camera.lookAt(targetX, targetY, targetZ);
++      const vBot = new THREE.Vector3(
++        window.__game.player.position.x,
++        window.__game.player.position.y - 0.5 - 0.10 * playerScale,
++        window.__game.player.position.z
++      );
++      vTop.project(camera);
++      vBot.project(camera);
++      const charRatio = Math.abs(vTop.y - vBot.y) / 2.0;
++
++      // Update Contract Object State
++      window.__game.player.screenHeightRatio = Number(charRatio.toFixed(4));
++      window.__game.cinematic.cameraY = camera.position.y;
++      window.__game.cinematic.fov = camera.fov;
++      window.__game.cinematic.pitchDegrees = cameraPitch * (180 / Math.PI);
++      window.__game.cinematic.introPlaying = isIntro;
  
        renderer.render(scene, camera);
  
-diff --git a/loop/browser_check.js b/loop/browser_check.js
-index a94d215..cec7caf 100644
---- a/loop/browser_check.js
-+++ b/loop/browser_check.js
-@@ -45,7 +45,11 @@ const path = require('path');
-     const start = await page.evaluate(() => window.__game?.player?.position ?? null);
-     check('game hook exposed', start !== null);
- 
--    // 3. Walk forward
-+    // 3. Island generated & rendered
-+    const islandBlocks = await page.evaluate(() => window.__game?.island?.blockCount ?? 0);
-+    check('island blocks rendered', islandBlocks > 100, `Block count: ${islandBlocks}`);
-+
-+    // 4. Walk forward
-     await page.keyboard.down('KeyW');
-     await page.waitForTimeout(1500);
-     await page.keyboard.up('KeyW');
-@@ -54,27 +58,38 @@ const path = require('path');
-     check('WASD moves player', !!moved, JSON.stringify({ start, after }));
-     await shot(page, '02_walked');
- 
--    // 4. Open the nearest project panel with E
-+    // 5. Orbit camera via mouse drag
-+    const camBefore = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
-+    await page.mouse.move(640, 360);
-+    await page.mouse.down();
-+    await page.mouse.move(440, 300, { steps: 10 });
-+    await page.mouse.up();
-+    await page.waitForTimeout(500);
-+    const camAfter = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
-+    check('mouse drag orbits camera', Math.abs(camAfter - camBefore) > 0.05, `Angle delta: ${camAfter - camBefore}`);
-+    await shot(page, '04_orbit_angle');
-+
-+    // 6. Open the nearest project panel with E
-     await page.keyboard.press('KeyE');
-     await page.waitForTimeout(800);
-     const panelOpen = await page.isVisible('#panel').catch(() => false);
-     check('E opens panel', panelOpen);
-     await shot(page, '03_panel');
- 
--    // 5. Close with Escape
-+    // 7. Close with Escape
-     await page.keyboard.press('Escape');
-     await page.waitForTimeout(500);
-     const panelClosed = !(await page.isVisible('#panel').catch(() => false));
-     check('Esc closes panel', panelClosed);
- 
--    // 6. Click-driven check: the close button works too
-+    // 8. Click-driven check: the close button works too
-     await page.keyboard.press('KeyE');
-     await page.waitForTimeout(800);
-     await page.click('#panel-close').catch(() => {});
-     await page.waitForTimeout(500);
-     check('close button works', !(await page.isVisible('#panel').catch(() => false)));
- 
--    // 7. No errors during the run
-+    // 9. No errors during the run
-     check(
-       'no console errors', 
-       report.consoleErrors.length === 0,
-diff --git a/loop/spec.md b/loop/spec.md
-index 6bdd1ad..db55eb0 100644
---- a/loop/spec.md
-+++ b/loop/spec.md
-@@ -1,31 +1,46 @@
--# 🎯 Phase 1 Specification: Empty World
-+# 🎯 Phase 2 Specification: Floating Island with Face Shading
- 
- ## Goal
--Prove that Three.js and the browser verification harness work end-to-end. Render a sky and one plain colored cube, with baseline movement and DOM contract hooks exposed.
-+Transform the empty world into a multi-layered 3D floating island built from voxel cubes with authentic directional face shading and an orbitable third-person camera.
- 
- ## Requirements
--1. **Three.js Setup:** Load Three.js from CDN (`https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js`) in a single self-contained `index.html`.
--2. **Visuals:**
--   - Flat blue sky background (`#5c94fc` or similar Minecraft day sky color).
--   - One plain colored cube (untextured, e.g., emerald green `#2ecc71` or gold `#f39c12`) positioned at $(0, 0.5, 0)$.
--   - Baseline lighting (directional light from top-left + ambient light).
--3. **Player & Movement:**
--   - Player position represented at $(0, 1, 5)$ looking toward the cube.
--   - Responds to `W`, `A`, `S`, `D` keys by translating the player position and camera.
--4. **Contract Hooks:**
--   - Expose `window.__game` with:
--     - `player: { position: { x, y, z } }`
-+1. **Island Voxel Structure:**
-+   - Build a floating island with natural depth:
-+     - **Top Layer ($y = 0$):** Grass blocks (vibrant grass green top `#5fa83b`, earth brown sides `#79553a`, dark brown bottom `#543d2b`).
-+     - **Sub-surface Layer ($y = -1$):** Dirt blocks (earth brown `#79553a`).
-+     - **Underbelly / Keel Layers ($y = -2$ down to $-4$):** Stone blocks (slate grey `#6b7280` / `#4b5563`), tapering inward as it descends to create a natural floating landmass shape.
-+   - Scale: The island should span at least $30 \times 12$ blocks (oriented west-to-east along the X-axis) to prepare for the linear building tour.
-+   - Use `THREE.InstancedMesh` (or efficient batched geometry) for high performance so all blocks render in minimal draw calls.
-+
-+2. **Directional Face Shading:**
-+   - Shading must be directional and consistent with Minecraft conventions:
-+     - **Top faces ($+Y$):** Brightest (multiplier $1.0$).
-+     - **Side faces ($\pm X, \pm Z$):** Medium tone (multiplier $0.7$–$0.8$).
-+     - **Bottom faces ($-Y$):** Darkest tone (multiplier $0.4$–$0.5$).
-+   - Directional light placed at top-left (`[-15, 30, 20]`) with soft ambient lighting so all faces have clear depth from every angle.
-+
-+3. **Camera & Movement:**
-+   - **Player & Gravity/Surface Collision:** Player stands atop the island at $y = 1.0$ (ground level $y = 0$).
-+   - **WASD Movement:** Translates the player across the island surface relative to the camera direction.
-+   - **Orbit Camera:** Left-click mouse drag orbits the camera around the player; mouse wheel zooms follow distance.
-+
-+4. **Contract Hooks & State:**
-+   - `window.__game`:
-+     - `player.position: { x, y, z }`
-+     - `island: { blockCount, dimensions }`
-      - `buildings: []`
-      - `activePanel: null`
--   - Log `"READY"` to the console once initial render loop is active.
--5. **DOM Hooks:**
--   - `#hud` – Overlay container with crosshair and status stub.
--   - `#panel` – Modal window (hidden by default).
--   - `#panel-title` – Header title within the panel.
--   - `#panel-close` – Clickable button that closes the panel.
--   - Toggling: Pressing `KeyE` opens `#panel` (`activePanel = "spawn"`); pressing `Escape` or clicking `#panel-close` closes `#panel` (`activePanel = null`).
-+   - Log `"READY"` to the console upon scene initialization.
-+
-+5. **DOM Elements:**
-+   - `#hud`: Instructions & crosshair overlay.
-+   - `#panel`: Modal window (hidden by default).
-+   - `#panel-title`: Title element.
-+   - `#panel-close`: Close button.
-+   - `KeyE` opens `#panel` (`activePanel = "spawn"`), `Escape` or `#panel-close` closes `#panel` (`activePanel = null`).
-+   - Movement is paused while `#panel` is open.
- 
- ## Done Criteria
--1. WebGL `<canvas>` renders cleanly.
--2. The blue sky and colored cube are visible.
--3. Automated Playwright checks pass all criteria with 0 console errors.
-+1. The floating island renders with grass, dirt, and stone layers visible from above and below.
-+2. Directional face shading creates clear cube edges from every camera angle.
-+3. Automated Playwright checks pass (movement, camera orbit, panel open/close, 0 console errors).
+@@ -739,4 +1102,4 @@
+     requestAnimationFrame(animate);
+   </script>
+ </body>
+-</html>
++</html>
+\ No newline at end of file

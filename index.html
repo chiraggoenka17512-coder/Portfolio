@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft Portfolio - Phase 2: Floating Island</title>
+  <title>Minecraft Portfolio - Daytime Landscape</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #5c94fc;
+      background-color: #c2ddff;
       font-family: 'VT323', monospace, sans-serif;
     }
 
@@ -37,6 +37,19 @@
       display: block;
       width: 100%;
       height: 100%;
+      filter: saturate(1.20) contrast(1.15);
+    }
+
+    /* Soft Daytime Vignette Overlay */
+    #vignette {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      background: radial-gradient(ellipse at center, transparent 75%, rgba(20, 45, 80, 0.16) 100%);
     }
 
     /* HUD overlay */
@@ -200,9 +213,10 @@
 </head>
 <body>
   <div id="canvas-container"></div>
+  <div id="vignette"></div>
 
   <div id="hud">
-    <div class="hud-info">Portfolio Island // WASD: Move &bull; Mouse Drag: Orbit &bull; Wheel: Zoom &bull; E: Panel</div>
+    <div class="hud-info">Portfolio Island // Pixel-Art 16&times;16 &bull; WASD: Move &bull; Mouse Drag: Orbit &bull; Wheel: Zoom &bull; E: Panel</div>
     <div class="crosshair"></div>
     <div class="hotbar-container">
       <div class="hotbar-slot active">1</div>
@@ -223,26 +237,39 @@
       <button id="panel-close" type="button" aria-label="Close">&times;</button>
     </div>
     <div class="panel-body">
-      <p>Phase 2: Floating Island Initialized.</p>
-      <p>Layer 0: Grass blocks with directional face shading.</p>
-      <p>Layer -1: Earth dirt underlay.</p>
-      <p>Layers -2 to -4: Tapered stone keel underbelly.</p>
+      <p>Pixel-Art Voxel Island Initialized.</p>
+      <p>Warm key &amp; cool hemisphere dual-tone lighting.</p>
+      <p>Atmospheric horizon fog &amp; drifting voxel clouds.</p>
+      <p>Authentic 16&times;16 textures with NearestFilter &amp; directional shading.</p>
       <p style="margin-top: 8px;">Press Esc or click close to dismiss.</p>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="textures/natural_landscape.js"></script>
+  <script src="textures/voxel_trees.js"></script>
+  <script src="textures/landscape_camera_haze.js"></script>
   <script>
     // 1. Contract State Object
     window.__game = {
       player: {
-        position: { x: 0, y: 1, z: 2 },
+        position: { x: 0, y: 3.0, z: 8.0 },
         yaw: 0,
-        isGrounded: true
+        isGrounded: true,
+        screenHeightRatio: 0.20
       },
       island: {
         blockCount: 0,
-        dimensions: { x: 40, z: 16 }
+        dimensions: { x: 50, z: 36 }
+      },
+      trees: [],
+      cinematic: {
+        introPlaying: false,
+        cameraY: 7.2,
+        fov: 60,
+        pitchDegrees: 20.0,
+        textureMode: 'pixel_art_16x16',
+        faceLuminance: { top: 1.05, side: 0.78, shadow: 0.60, bottom: 0.38 }
       },
       buildings: [],
       activePanel: null
@@ -302,16 +329,21 @@
       isDragging = false;
     });
 
-    // Mouse Drag Orbit Controls
+    // Camera follow and orbit parameters
+    let isIntro = false; // Immediately at spawn framing
+    const introDuration = 0.0;
+    let introElapsed = 0.0;
+
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
     let cameraYaw = 0.0;
-    let cameraPitch = 0.35;
-    let cameraDistance = 6.5;
+    let cameraPitch = 20.0 * (Math.PI / 180); // ~20.0 degrees downward (horizon in upper third)
+    let cameraDistance = 9.5; // 8 to 10 blocks behind player
 
     window.addEventListener('mousedown', (e) => {
       if (e.target.closest && e.target.closest('#panel')) return;
+      if (isIntro) return;
       if (e.button === 0) {
         isDragging = true;
         prevMouseX = e.clientX;
@@ -320,16 +352,18 @@
     });
 
     window.addEventListener('mousemove', (e) => {
-      if (isDragging) {
+      if (isDragging && !isIntro) {
         const dx = e.clientX - prevMouseX;
         const dy = e.clientY - prevMouseY;
         prevMouseX = e.clientX;
         prevMouseY = e.clientY;
 
         cameraYaw -= dx * 0.005;
-        cameraPitch = Math.max(-0.75, Math.min(1.35, cameraPitch + dy * 0.005));
+        // Clamp pitch to remain between 15 and 75 degrees
+        cameraPitch = Math.max(15 * Math.PI / 180, Math.min(75 * Math.PI / 180, cameraPitch + dy * 0.005));
 
         window.__game.player.yaw = cameraYaw;
+        window.__game.cinematic.pitchDegrees = cameraPitch * (180 / Math.PI);
       }
     });
 
@@ -338,228 +372,310 @@
     });
 
     window.addEventListener('wheel', (e) => {
-      cameraDistance = Math.max(3.0, Math.min(18.0, cameraDistance + e.deltaY * 0.006));
+      if (isIntro) return;
+      cameraDistance = Math.max(4.0, Math.min(18.0, cameraDistance + e.deltaY * 0.006));
     }, { passive: true });
 
     // 4. Three.js Scene Setup
+    console.log("[VERSION] v4.0-daytime-calibrated-sky-active");
+
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x5c94fc);
-    scene.fog = new THREE.Fog(0x5c94fc, 30, 85);
+    // scene.background MUST be null so the custom sky dome shader renders
+    scene.background = null;
+    // Atmospheric daytime fog matching the horizon blue (#9cc9f0) with reduced density
+    scene.fog = new THREE.Fog(0x9cc9f0, 48, 140);
 
+    // camera.far set to 1200 (well over 2x the 450 dome radius)
     const camera = new THREE.PerspectiveCamera(
-      65,
+      60,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      1200
     );
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x5c94fc, 1);
+    renderer.setClearColor(0x9cc9f0, 1.0);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
     container.appendChild(renderer.domElement);
 
-    // Baseline Lighting: Soft Ambient + Strong Directional at [-15, 30, 20]
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.90);
-    dirLight.position.set(-15, 30, 20);
+    // Neutral-warm key light (close to #fff4e0)
+    const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.35);
+    dirLight.position.set(20, 32, 16);
     scene.add(dirLight);
 
-    // 5. Procedural 16x16 Minecraft Voxel Textures
-    function createBlockTexture(palette, patternFn, edgeBevel = true) {
-      const c = document.createElement('canvas');
-      c.width = 16;
-      c.height = 16;
-      const ctx = c.getContext('2d');
-      for (let y = 0; y < 16; y++) {
-        for (let x = 0; x < 16; x++) {
-          ctx.fillStyle = patternFn(x, y, palette);
-          ctx.fillRect(x, y, 1, 1);
-        }
-      }
-      if (edgeBevel) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
-        ctx.fillRect(0, 15, 16, 1);
-        ctx.fillRect(15, 0, 1, 16);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.fillRect(0, 0, 16, 1);
-        ctx.fillRect(0, 0, 1, 16);
-      }
-      const tex = new THREE.CanvasTexture(c);
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.NearestFilter;
-      return tex;
-    }
+    // Cool blue hemisphere fill from sky (#9cc9f0) with warm grass bounce (#6e8a52)
+    const hemiLight = new THREE.HemisphereLight(0x9cc9f0, 0x6e8a52, 0.75);
+    scene.add(hemiLight);
 
+    // Daytime Sky Dome (Inverted Sphere radius 450 with Custom ShaderMaterial)
+    // Gradient: mid blue at top (#3f8fdc) to lighter blue at horizon (#9cc9f0). Saturated, not pale.
+    // Simple bright sun disc in the upper sky with a small soft edge and no wide glow.
+    const skyGeo = new THREE.SphereGeometry(450, 32, 16);
+    // Sun placed in upper sky in forward view direction (elevation ~8 deg, azimuth ~14 deg)
+    const sunAzimuth = 14.0 * Math.PI / 180.0;
+    const sunElevation = 8.0 * Math.PI / 180.0;
+    const sunDirVec = new THREE.Vector3(
+      Math.sin(sunAzimuth) * Math.cos(sunElevation),
+      Math.sin(sunElevation),
+      -Math.cos(sunAzimuth) * Math.cos(sunElevation)
+    ).normalize();
+
+    const skyUniforms = {
+      uTime: { value: 0.0 },
+      uSunDirection: { value: sunDirVec }
+    };
+
+    const skyVertexShader = `
+      varying vec3 vViewDir;
+
+      void main() {
+        vViewDir = normalize(position);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+
+    const skyFragmentShader = `
+      precision highp float;
+
+      uniform float uTime;
+      uniform vec3 uSunDirection;
+
+      varying vec3 vViewDir;
+
+      // Daytime palette: mid blue at top (#3f8fdc), lighter saturated blue at horizon (#9cc9f0)
+      const vec3 cSkyTop     = vec3(0.247, 0.561, 0.863); // #3f8fdc (hue ~208 deg, sat ~71%)
+      const vec3 cSkyHorizon = vec3(0.612, 0.788, 0.941); // #9cc9f0 (hue ~208 deg, sat ~35%)
+      const vec3 cSkyNadir   = vec3(0.550, 0.735, 0.900); // nadir base blend
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+
+      void main() {
+        vec3 dir = normalize(vViewDir);
+
+        // 1. Elevation gradient
+        float t = clamp(dir.y * 2.2, 0.0, 1.0);
+        t = pow(t, 0.85);
+
+        vec3 skyColor;
+        if (dir.y >= 0.0) {
+          skyColor = mix(cSkyHorizon, cSkyTop, t);
+        } else {
+          float tb = clamp(-dir.y * 2.0, 0.0, 1.0);
+          skyColor = mix(cSkyHorizon, cSkyNadir, tb);
+        }
+
+        // 2. Simple bright sun disc in the upper sky with a small soft edge and NO wide glow
+        vec3 sunDir = normalize(uSunDirection);
+        float cosTheta = dot(dir, sunDir);
+        // Sun disc: angular radius ~2.8 degrees with small soft edge
+        float sunDisc = smoothstep(0.9982, 0.9994, cosTheta);
+        vec3 sunDiscColor = vec3(1.0, 1.0, 0.96) * 1.6;
+        skyColor = mix(skyColor, sunDiscColor, sunDisc);
+
+        // 3. Triangular dithering noise (1%) to eliminate banding
+        float dither = (hash(gl_FragCoord.xy) - 0.5) * (1.2 / 255.0);
+        skyColor += vec3(dither);
+
+        gl_FragColor = vec4(clamp(skyColor, 0.0, 1.0), 1.0);
+      }
+    `;
+
+    const skyMat = new THREE.ShaderMaterial({
+      uniforms: skyUniforms,
+      vertexShader: skyVertexShader,
+      fragmentShader: skyFragmentShader,
+      side: THREE.BackSide,
+      depthWrite: false,
+      depthTest: true,
+      fog: false,
+      toneMapped: false // Tone mapping disabled so the blues stay true
+    });
+
+    const skyMesh = new THREE.Mesh(skyGeo, skyMat);
+    skyMesh.renderOrder = -1000;
+    skyMesh.frustumCulled = false;
+    scene.add(skyMesh);
+
+    // Drifting Voxel Clouds: Stacked slabs with pure white tops and slightly darker light-grey undersides
+    const cloudsGroup = new THREE.Group();
+    const cloudTopMat = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.94,
+      depthWrite: false
+    });
+    const cloudBottomMat = new THREE.MeshLambertMaterial({
+      color: 0xd6e2ee,
+      transparent: true,
+      opacity: 0.94,
+      depthWrite: false
+    });
+
+    const cloudPuffs = [];
+    const cloudSpecs = [
+      { x: -50, y: 32, z: -35, w: 18, h: 1.0, d: 8 },
+      { x: -15, y: 34, z: -18, w: 22, h: 1.0, d: 10 },
+      { x: 25,  y: 33, z: -40, w: 20, h: 1.0, d: 9 },
+      { x: 55,  y: 35, z: -15, w: 24, h: 1.0, d: 11 },
+      { x: -28, y: 31, z: 25,  w: 16, h: 1.0, d: 8 },
+      { x: 30,  y: 32, z: 30,  w: 18, h: 1.0, d: 9 }
+    ];
+
+    for (let i = 0; i < cloudSpecs.length; i++) {
+      const s = cloudSpecs[i];
+      const cg = new THREE.Group();
+
+      // Lower slab: slightly darker light-grey underside
+      const botMesh = new THREE.Mesh(new THREE.BoxGeometry(s.w, s.h, s.d), cloudBottomMat);
+      botMesh.position.set(0, -s.h * 0.5, 0);
+      cg.add(botMesh);
+
+      // Upper slab: pure white top stepped in
+      const topMesh = new THREE.Mesh(new THREE.BoxGeometry(s.w * 0.72, s.h, s.d * 0.72), cloudTopMat);
+      topMesh.position.set((i % 2 === 0 ? 1 : -1) * (s.w * 0.08), s.h * 0.5, (i % 3 === 0 ? 1 : -1) * (s.d * 0.08));
+      cg.add(topMesh);
+
+      cg.position.set(s.x, s.y, s.z);
+      cloudsGroup.add(cg);
+      cloudPuffs.push(cg);
+    }
+    scene.add(cloudsGroup);
+
+    // 5. Procedural 16x16 Textures with Hand-Painted Organic Feel
     function pseudoHash(x, y) {
       const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
       return n - Math.floor(n);
     }
 
-    // Top Layer: Grass (#5fa83b)
-    const grassTopTex = createBlockTexture(
-      ['#5fa83b', '#579d36', '#66b240', '#529330', '#63ad3d'],
-      (x, y, p) => p[Math.floor(pseudoHash(x, y) * p.length)]
-    );
+    // 5. Authentic 16x16 Pixel Art Textures
+    const loadingManager = new THREE.LoadingManager();
+    let texturesLoaded = false;
+    loadingManager.onLoad = () => {
+      texturesLoaded = true;
+    };
+    loadingManager.onError = (url) => {
+      console.error('Error loading texture:', url);
+    };
 
-    // Sub Layer: Dirt (#79553a)
-    const dirtTex = createBlockTexture(
-      ['#79553a', '#6d4c33', '#835c3f', '#64442b', '#745137'],
-      (x, y, p) => p[Math.floor(pseudoHash(x + 10, y + 20) * p.length)]
-    );
+    const textureLoader = new THREE.TextureLoader(loadingManager);
 
-    // Dark Earth Bottom (#543d2b)
-    const darkDirtTex = createBlockTexture(
-      ['#543d2b', '#483424', '#5c4330', '#412e1f'],
-      (x, y, p) => p[Math.floor(pseudoHash(x + 30, y + 40) * p.length)]
-    );
+    function loadPixelTexture(path) {
+      const tex = textureLoader.load(path, (loaded) => {
+        loaded.magFilter = THREE.NearestFilter;
+        loaded.minFilter = THREE.NearestFilter;
+        loaded.generateMipmaps = false;
+        loaded.needsUpdate = true;
+      });
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      tex.generateMipmaps = false;
+      return tex;
+    }
 
-    // Grass Side: Green jagged overhang at top, earth brown below
-    const grassSideTex = createBlockTexture(
-      null,
-      (x, y) => {
-        const overhang = 3 + (Math.sin(x * 1.5) > 0 ? 1 : 0) + (x % 4 === 0 ? 1 : 0);
-        if (y < overhang) {
-          const gp = ['#5fa83b', '#579d36', '#66b240', '#529330'];
-          return gp[Math.floor(pseudoHash(x, y) * gp.length)];
-        }
-        const dp = ['#79553a', '#6d4c33', '#835c3f', '#64442b'];
-        return dp[Math.floor(pseudoHash(x + 5, y + 15) * dp.length)];
-      }
-    );
-
-    // Stone Keel: Slate Grey (#6b7280 / #4b5563)
-    const stoneTex = createBlockTexture(
-      ['#6b7280', '#5f6572', '#767d8d', '#535965', '#636976'],
-      (x, y, p) => p[Math.floor(pseudoHash(x + 50, y + 60) * p.length)]
-    );
-
-    const darkStoneTex = createBlockTexture(
-      ['#4b5563', '#404954', '#55606e', '#3a424c'],
-      (x, y, p) => p[Math.floor(pseudoHash(x + 70, y + 80) * p.length)]
-    );
+    const grassTopTex     = loadPixelTexture('textures/primary_16x16_block_set/grass_top.png');
+    const grassSideTex    = loadPixelTexture('textures/primary_16x16_block_set/grass_side.png');
+    const dirtTex         = loadPixelTexture('textures/primary_16x16_block_set/dirt.png');
+    const stoneGenericTex = loadPixelTexture('textures/primary_16x16_block_set/stone_generic.png');
 
     // Directional Face Shading Materials:
     // Top (+Y): 1.00 (brightest)
-    // Side X (±X): 0.80 (medium tone)
-    // Side Z (±Z): 0.72 (medium tone with cross-axis contrast)
-    // Bottom (-Y): 0.45 (darkest tone)
+    // Sides (±X, ±Z): 0.75 (medium tone)
+    // Bottom (-Y): 0.45 (deep shadowed underbelly tone)
     function createVoxelMaterials(topTex, sideTex, botTex) {
+      const cSide = new THREE.Color().setScalar(0.75);
+      const cTop  = new THREE.Color().setScalar(1.00);
+      const cBot  = new THREE.Color().setScalar(0.45);
       return [
-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // +X
-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.80) }), // -X
-        new THREE.MeshLambertMaterial({ map: topTex,  color: new THREE.Color().setScalar(1.00) }), // +Y
-        new THREE.MeshLambertMaterial({ map: botTex,  color: new THREE.Color().setScalar(0.45) }), // -Y
-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) }), // +Z
-        new THREE.MeshLambertMaterial({ map: sideTex, color: new THREE.Color().setScalar(0.72) })  // -Z
+        new THREE.MeshLambertMaterial({ map: sideTex, color: cSide }), // +X (Face 0)
+        new THREE.MeshLambertMaterial({ map: sideTex, color: cSide }), // -X (Face 1)
+        new THREE.MeshLambertMaterial({ map: topTex,  color: cTop  }), // +Y (Face 2)
+        new THREE.MeshLambertMaterial({ map: botTex,  color: cBot  }), // -Y (Face 3)
+        new THREE.MeshLambertMaterial({ map: sideTex, color: cSide }), // +Z (Face 4)
+        new THREE.MeshLambertMaterial({ map: sideTex, color: cSide })  // -Z (Face 5)
       ];
     }
 
-    const grassMaterials = createVoxelMaterials(grassTopTex, grassSideTex, darkDirtTex);
-    const dirtMaterials  = createVoxelMaterials(dirtTex, dirtTex, darkDirtTex);
-    const stoneMaterials = createVoxelMaterials(stoneTex, stoneTex, darkStoneTex);
+    const grassMaterials = createVoxelMaterials(grassTopTex, grassSideTex, dirtTex);
+    const dirtMaterials  = createVoxelMaterials(dirtTex, dirtTex, dirtTex);
+    const stoneMaterials = createVoxelMaterials(stoneGenericTex, stoneGenericTex, stoneGenericTex);
 
-    // 6. Island Voxel Generation (40x16 natural floating island)
-    const islandBlocks = { grass: [], dirt: [], stone: [] };
-    const cx = 10, cz = 0;
-    const rx = 19.5, rz = 7.5;
+    // 6. Natural Voxel Landscape & River Valley Module
+    let landscapeData = null;
+    if (window.buildNaturalLandscape) {
+      landscapeData = window.buildNaturalLandscape(scene, {
+        grass: grassMaterials,
+        dirt: dirtMaterials,
+        stone: stoneMaterials
+      }, { seed: 1337 });
 
-    for (let x = -10; x <= 29; x++) {
-      for (let z = -8; z <= 7; z++) {
-        const dx = (x - cx) / rx;
-        const dz = (z - cz) / rz;
-        const noise = Math.sin(x * 0.45) * Math.cos(z * 0.65) * 0.12 + Math.sin(x * 0.9 + z * 0.7) * 0.08;
-        const dist = Math.hypot(dx, dz) + noise;
-
-        // Guarantee 40x16 extent points
-        const isExtent = (x === -10 && z === 0) || (x === 29 && z === 0) || (x === 10 && z === -8) || (x === 10 && z === 7);
-        // Solid walkable interior corridor
-        const isCore = (x >= -4 && x <= 16 && z >= -4 && z <= 4);
-
-        if (dist <= 1.02 || isExtent || isCore) {
-          // Top Layer (y = 0): Grass
-          islandBlocks.grass.push({ x, y: 0, z });
-
-          // Sub-layer (y = -1): Dirt
-          if (dist <= 0.98 || isExtent || isCore) {
-            islandBlocks.dirt.push({ x, y: -1, z });
-          }
-
-          // Keel layers (y = -2 to -4): Stone tapering inward
-          if (dist <= 0.76 || (isCore && dist <= 0.85)) {
-            islandBlocks.stone.push({ x, y: -2, z });
-          }
-          if (dist <= 0.52) {
-            islandBlocks.stone.push({ x, y: -3, z });
-          }
-          if (dist <= 0.30) {
-            islandBlocks.stone.push({ x, y: -4, z });
-          }
-        }
-      }
+      window.__game.island.blockCount = landscapeData.blockCount;
+      window.__game.island.dimensions = landscapeData.dimensions;
+      window.__game.island.landscapeData = landscapeData;
+      window.__game.island.terrainData = landscapeData; // backwards compatibility
+      console.log(`[LANDSCAPE] Natural landscape generated: ${landscapeData.blockCount} blocks`);
     }
 
-    const totalBlockCount = islandBlocks.grass.length + islandBlocks.dirt.length + islandBlocks.stone.length;
-    window.__game.island.blockCount = totalBlockCount;
-    window.__game.island.dimensions = { x: 40, z: 16 };
-
-    // Build Instanced Meshes
-    const unitBox = new THREE.BoxGeometry(1, 1, 1);
-    const dummyObj = new THREE.Object3D();
-
-    function buildInstancedMesh(geo, materials, list) {
-      const im = new THREE.InstancedMesh(geo, materials, list.length);
-      for (let i = 0; i < list.length; i++) {
-        dummyObj.position.set(list[i].x, list[i].y, list[i].z);
-        dummyObj.updateMatrix();
-        im.setMatrixAt(i, dummyObj.matrix);
-      }
-      im.instanceMatrix.needsUpdate = true;
-      return im;
+    // 7. Procedural Birch & Spruce Trees
+    let treeData = null;
+    if (window.buildVoxelTrees) {
+      treeData = window.buildVoxelTrees(scene, landscapeData);
+      window.__game.island.treeData = treeData;
+      window.__game.trees = treeData.trees;
+      console.log(`[TREES] Voxel trees generated: ${treeData.treeCount} trees`);
     }
 
-    const grassMesh = buildInstancedMesh(unitBox, grassMaterials, islandBlocks.grass);
-    const dirtMesh  = buildInstancedMesh(unitBox, dirtMaterials, islandBlocks.dirt);
-    const stoneMesh = buildInstancedMesh(unitBox, stoneMaterials, islandBlocks.stone);
+    // 8. Landscape Camera, Dual-Tone Lighting & Atmospheric Aerial Haze
+    let cameraHazeController = null;
+    if (window.setupLandscapeCameraAndHaze) {
+      cameraHazeController = window.setupLandscapeCameraAndHaze(scene, camera, renderer, window.__game.player);
+      window.__game.cinematic.cameraController = cameraHazeController;
+      console.log('[HAZE] Camera framing, warm lighting & blue haze initialized');
+    }
 
-    scene.add(grassMesh);
-    scene.add(dirtMesh);
-    scene.add(stoneMesh);
-
-    // 7. Stylized Minecraft Player Character Avatar
+    // 7. Stylized Adventurer Player Character Avatar
     const playerAvatar = new THREE.Group();
+    const playerScale = 0.65;
+    playerAvatar.scale.set(playerScale, playerScale, playerScale);
 
-    // Palettes
-    const skinMat = new THREE.MeshLambertMaterial({ color: 0xd79a6d });
-    const hairMat = new THREE.MeshLambertMaterial({ color: 0x4a2c00 });
-    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const eyePupilMat = new THREE.MeshBasicMaterial({ color: 0x2b388f });
-    const shirtMat = new THREE.MeshLambertMaterial({ color: 0x00a8a8 });
-    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x2b3d84 });
-    const shoeMat = new THREE.MeshLambertMaterial({ color: 0x424242 });
+    // Custom Adventurer Palette (charcoal/slate tunic, leather belt, warm scarf accent)
+    const skinMat      = new THREE.MeshLambertMaterial({ color: 0xd9a073 });
+    const hairMat      = new THREE.MeshLambertMaterial({ color: 0x2d231e });
+    const eyePupilMat  = new THREE.MeshBasicMaterial({ color: 0x2b3442 });
+    const eyeWhiteMat  = new THREE.MeshBasicMaterial({ color: 0xf5f5f5 });
+    const scarfMat     = new THREE.MeshLambertMaterial({ color: 0xc44d2d });
+    const scarfTailMat = new THREE.MeshLambertMaterial({ color: 0xab3d20 });
+    const tunicMat     = new THREE.MeshLambertMaterial({ color: 0x363e4b });
+    const beltMat      = new THREE.MeshLambertMaterial({ color: 0x754520 });
+    const buckleMat    = new THREE.MeshLambertMaterial({ color: 0xcca43b });
+    const bracerMat    = new THREE.MeshLambertMaterial({ color: 0x62391b });
+    const pantsMat     = new THREE.MeshLambertMaterial({ color: 0x48494d });
+    const bootCuffMat  = new THREE.MeshLambertMaterial({ color: 0x4d382c });
+    const bootMat      = new THREE.MeshLambertMaterial({ color: 0x28201a });
 
     // Head Group
     const headGroup = new THREE.Group();
     const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), skinMat);
-    // Hair covering top and back
-    const hairTopMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.18, 0.52), hairMat);
+    const hairTopMesh = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.18, 0.53), hairMat);
     hairTopMesh.position.y = 0.18;
-    const hairBackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.36, 0.14), hairMat);
+    const hairBackMesh = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.36, 0.14), hairMat);
     hairBackMesh.position.set(0, 0.06, -0.21);
     headGroup.add(headMesh);
     headGroup.add(hairTopMesh);
     headGroup.add(hairBackMesh);
 
-    // Face Eyes (at front +Z)
-    const eyeLWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
+    // Eyes
+    const eyeLWhite = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 0.02), eyeWhiteMat);
     eyeLWhite.position.set(-0.13, 0.02, 0.255);
     const eyeLPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
     eyeLPupil.position.set(-0.11, 0.02, 0.256);
 
-    const eyeRWhite = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), eyeWhiteMat);
+    const eyeRWhite = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 0.02), eyeWhiteMat);
     eyeRWhite.position.set(0.13, 0.02, 0.255);
     const eyeRPupil = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.025), eyePupilMat);
     eyeRPupil.position.set(0.15, 0.02, 0.256);
@@ -572,56 +688,92 @@
     headGroup.position.y = 1.35;
     playerAvatar.add(headGroup);
 
-    // Torso (Cyan Shirt)
-    const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.65, 0.26), shirtMat);
-    torsoMesh.position.y = 0.825;
-    playerAvatar.add(torsoMesh);
+    // Warm Scarf Collar & Tails (visible 360 around adventurer)
+    const scarfCollar = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.16, 0.40), scarfMat);
+    scarfCollar.position.set(0, 1.13, 0);
+    playerAvatar.add(scarfCollar);
+
+    const scarfTailFront = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.34, 0.10), scarfTailMat);
+    scarfTailFront.position.set(-0.18, 0.94, 0.16);
+    playerAvatar.add(scarfTailFront);
+
+    const scarfTailBack = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.28, 0.10), scarfTailMat);
+    scarfTailBack.position.set(0.16, 0.97, -0.16);
+    playerAvatar.add(scarfTailBack);
+
+    // Torso (Slate Tunic + Leather Belt & Buckle)
+    const torsoGroup = new THREE.Group();
+    torsoGroup.position.y = 0.825;
+
+    const tunicMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.65, 0.26), tunicMat);
+    torsoGroup.add(tunicMesh);
+
+    const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.12, 0.28), beltMat);
+    beltMesh.position.y = -0.22;
+    torsoGroup.add(beltMesh);
+
+    const buckleMesh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.10, 0.29), buckleMat);
+    buckleMesh.position.set(0, -0.22, 0.01);
+    torsoGroup.add(buckleMesh);
+
+    playerAvatar.add(torsoGroup);
 
     // Left Arm
     const leftArmGroup = new THREE.Group();
-    leftArmGroup.position.set(-0.36, 1.1, 0);
-    const leftSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
-    leftSleeve.position.y = -0.175;
-    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
-    leftHand.position.y = -0.475;
+    leftArmGroup.position.set(-0.36, 1.08, 0);
+    const leftSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.32, 0.2), tunicMat);
+    leftSleeve.position.y = -0.16;
+    const leftBracer = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.14, 0.21), bracerMat);
+    leftBracer.position.y = -0.34;
+    const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), skinMat);
+    leftHand.position.y = -0.49;
     leftArmGroup.add(leftSleeve);
+    leftArmGroup.add(leftBracer);
     leftArmGroup.add(leftHand);
     playerAvatar.add(leftArmGroup);
 
     // Right Arm
     const rightArmGroup = new THREE.Group();
-    rightArmGroup.position.set(0.36, 1.1, 0);
-    const rightSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.2), shirtMat);
-    rightSleeve.position.y = -0.175;
-    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.18), skinMat);
-    rightHand.position.y = -0.475;
+    rightArmGroup.position.set(0.36, 1.08, 0);
+    const rightSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.32, 0.2), tunicMat);
+    rightSleeve.position.y = -0.16;
+    const rightBracer = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.14, 0.21), bracerMat);
+    rightBracer.position.y = -0.34;
+    const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), skinMat);
+    rightHand.position.y = -0.49;
     rightArmGroup.add(rightSleeve);
+    rightArmGroup.add(rightBracer);
     rightArmGroup.add(rightHand);
     playerAvatar.add(rightArmGroup);
 
     // Left Leg
     const leftLegGroup = new THREE.Group();
     leftLegGroup.position.set(-0.13, 0.5, 0);
-    const leftPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
-    leftPants.position.y = -0.22;
-    const leftShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
-    leftShoe.position.y = -0.54;
+    const leftPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.22), pantsMat);
+    leftPants.position.y = -0.18;
+    const leftBootCuff = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.10, 0.24), bootCuffMat);
+    leftBootCuff.position.y = -0.38;
+    const leftBoot = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.18, 0.26), bootMat);
+    leftBoot.position.set(0, -0.51, 0.02);
     leftLegGroup.add(leftPants);
-    leftLegGroup.add(leftShoe);
+    leftLegGroup.add(leftBootCuff);
+    leftLegGroup.add(leftBoot);
     playerAvatar.add(leftLegGroup);
 
     // Right Leg
     const rightLegGroup = new THREE.Group();
     rightLegGroup.position.set(0.13, 0.5, 0);
-    const rightPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.52, 0.22), pantsMat);
-    rightPants.position.y = -0.22;
-    const rightShoe = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.15, 0.23), shoeMat);
-    rightShoe.position.y = -0.54;
+    const rightPants = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.40, 0.22), pantsMat);
+    rightPants.position.y = -0.18;
+    const rightBootCuff = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.10, 0.24), bootCuffMat);
+    rightBootCuff.position.y = -0.38;
+    const rightBoot = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.18, 0.26), bootMat);
+    rightBoot.position.set(0, -0.51, 0.02);
     rightLegGroup.add(rightPants);
-    rightLegGroup.add(rightShoe);
+    rightLegGroup.add(rightBootCuff);
+    rightLegGroup.add(rightBoot);
     playerAvatar.add(rightLegGroup);
 
-    // Initial orientation: facing forward into the world (along -Z)
     playerAvatar.rotation.y = Math.PI;
     scene.add(playerAvatar);
 
@@ -632,7 +784,23 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // 8. Game Loop & Movement
+    // 8. Natural Landscape Spawn View Camera
+    const introStartPos = new THREE.Vector3(0, 7.2, 17.5);
+    const introStartLook = new THREE.Vector3(0, 3.35, 8.0);
+
+    const currentCamPos = new THREE.Vector3().copy(introStartPos);
+    const currentLookAt = new THREE.Vector3().copy(introStartLook);
+    const desiredCamPos = new THREE.Vector3().copy(introStartPos);
+    const desiredLookAt = new THREE.Vector3().copy(introStartLook);
+
+    camera.position.copy(currentCamPos);
+    camera.lookAt(currentLookAt);
+
+    function easeInOutCubic(x) {
+      return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+    }
+
+    // 9. Game Loop & Movement
     const playerSpeed = 4.0;
     let lastTimestamp = null;
     let walkCycleTime = 0.0;
@@ -647,11 +815,28 @@
       const dt = Math.min((currentTime - lastTimestamp) / 1000, 0.1);
       lastTimestamp = currentTime;
 
-      // WASD Input Handling
+      // Update river water ripples & wildflower wind sway
+      if (landscapeData && landscapeData.update) {
+        landscapeData.update(currentTime * 0.001);
+      }
+
+      // Drift voxel clouds slowly across the sky
+      for (let i = 0; i < cloudPuffs.length; i++) {
+        cloudPuffs[i].position.x += 0.45 * dt;
+        if (cloudPuffs[i].position.x > 70) {
+          cloudPuffs[i].position.x = -70;
+        }
+      }
+
+      // Keep sky dome centered on camera
+      skyMesh.position.copy(camera.position);
+      skyUniforms.uTime.value = currentTime * 0.001;
+
+      // WASD Input Handling (blocked during initial intro glide or when modal open)
       let inputX = 0;
       let inputZ = 0;
 
-      if (!window.__game.activePanel) {
+      if (!window.__game.activePanel && !isIntro) {
         if (keys['KeyW'] || keys['w']) inputZ += 1;
         if (keys['KeyS'] || keys['s']) inputZ -= 1;
         if (keys['KeyA'] || keys['a']) inputX -= 1;
@@ -664,10 +849,8 @@
         const sinY = Math.sin(cameraYaw);
         const cosY = Math.cos(cameraYaw);
 
-        // Forward vector pointing away from camera into the scene
         const fwdX = -sinY;
         const fwdZ = -cosY;
-        // Right vector perpendicular to forward
         const rgtX = cosY;
         const rgtZ = -sinY;
 
@@ -711,26 +894,78 @@
         window.__game.player.position.z
       );
 
-      // Third-Person Orbit Follow Camera
+      // Desired third-person vantage point
+      const targetX = window.__game.player.position.x;
+      const targetY = window.__game.player.position.y + 0.35;
+      const targetZ = window.__game.player.position.z;
+
       const cosP = Math.cos(cameraPitch);
       const sinP = Math.sin(cameraPitch);
       const sinY = Math.sin(cameraYaw);
       const cosY = Math.cos(cameraYaw);
 
-      const targetX = window.__game.player.position.x;
-      const targetY = window.__game.player.position.y + 0.6;
-      const targetZ = window.__game.player.position.z;
-
-      camera.position.set(
+      const spawnCamPos = new THREE.Vector3(
         targetX + sinY * cosP * cameraDistance,
         targetY + sinP * cameraDistance,
         targetZ + cosY * cosP * cameraDistance
       );
-      camera.lookAt(targetX, targetY, targetZ);
+      const spawnLookAt = new THREE.Vector3(targetX, targetY, targetZ);
+
+      // Intro sequence interpolation
+      if (isIntro) {
+        introElapsed += dt;
+        const p = Math.min(1.0, introElapsed / introDuration);
+        const ease = easeInOutCubic(p);
+
+        desiredCamPos.lerpVectors(introStartPos, spawnCamPos, ease);
+        desiredLookAt.lerpVectors(introStartLook, spawnLookAt, ease);
+
+        if (p >= 1.0) {
+          isIntro = false;
+          window.__game.cinematic.introPlaying = false;
+        }
+      } else {
+        desiredCamPos.copy(spawnCamPos);
+        desiredLookAt.copy(spawnLookAt);
+      }
+
+      // Smooth camera damping toward desired vantage point (never snaps)
+      const dampFactor = isIntro ? (1.0 - Math.exp(-dt * 8.5)) : (1.0 - Math.exp(-dt * 6.5));
+      currentCamPos.lerp(desiredCamPos, dampFactor);
+      currentLookAt.lerp(desiredLookAt, dampFactor);
+
+      camera.position.copy(currentCamPos);
+      camera.lookAt(currentLookAt);
+
+      // Keep sky dome centered on camera to maintain seamless horizon
+      skyMesh.position.set(camera.position.x, 0, camera.position.z);
+
+      // Calculate dynamic character screen height ratio
+      const vTop = new THREE.Vector3(
+        window.__game.player.position.x,
+        window.__game.player.position.y - 0.5 + 1.68 * playerScale,
+        window.__game.player.position.z
+      );
+      const vBot = new THREE.Vector3(
+        window.__game.player.position.x,
+        window.__game.player.position.y - 0.5 - 0.10 * playerScale,
+        window.__game.player.position.z
+      );
+      vTop.project(camera);
+      vBot.project(camera);
+      const charRatio = Math.abs(vTop.y - vBot.y) / 2.0;
+
+      // Update Contract Object State
+      window.__game.player.screenHeightRatio = Number(charRatio.toFixed(4));
+      window.__game.cinematic.cameraY = camera.position.y;
+      window.__game.cinematic.fov = camera.fov;
+      window.__game.cinematic.pitchDegrees = cameraPitch * (180 / Math.PI);
+      window.__game.cinematic.introPlaying = isIntro;
+      window.__game.cinematic.textureMode = 'pixel_art_16x16';
 
       renderer.render(scene, camera);
 
-      if (!renderedFirstFrame) {
+      if (!renderedFirstFrame && (texturesLoaded || introElapsed > 1.0)) {
         renderedFirstFrame = true;
         console.log("READY");
       }

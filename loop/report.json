@@ -3,55 +3,47 @@
     {
       "name": "canvas renders",
       "pass": true,
-      "detail": ""
+      "detail": "WebGL canvas mounted in DOM"
     },
     {
-      "name": "game hook exposed",
+      "name": "top of frame is blue and clearly more saturated than horizon",
       "pass": true,
-      "detail": ""
+      "detail": "Top hue: 206.9°, sat: 58.4% vs Horizon sat: 41.2%"
     },
     {
-      "name": "island blocks rendered",
+      "name": "horizon band is pale blue (hue 190..215 deg) with no warm sunset pixels",
       "pass": true,
-      "detail": "Block count: 1335"
+      "detail": "Horizon hue: 204.5° (spec: 190..215°), Sunset warm pixels in sky: 0"
     },
     {
-      "name": "WASD moves player",
+      "name": "fog colour matches horizon blue (#9cc9f0)",
       "pass": true,
-      "detail": "{\"start\":{\"x\":0,\"y\":1,\"z\":2},\"after\":{\"x\":0,\"y\":1,\"z\":-2.8}}"
+      "detail": "Configured fog hex: #9cc9f0"
     },
     {
-      "name": "mouse drag orbits camera",
+      "name": "sun disc is visible in upper sky",
       "pass": true,
-      "detail": "Angle delta: 0.9999999999999999"
+      "detail": "Sun disc found (1402 bright pixels) near (792, 5)"
     },
     {
-      "name": "E opens panel",
+      "name": "average saturation of terrain, water, and foliage boosted",
       "pass": true,
-      "detail": ""
+      "detail": "Average terrain saturation: 68.1% (threshold > 35%)"
     },
     {
-      "name": "Esc closes panel",
+      "name": "water pixels are darker than the sky pixels above them",
       "pass": true,
-      "detail": ""
-    },
-    {
-      "name": "close button works",
-      "pass": true,
-      "detail": ""
+      "detail": "Water lum: 47.4% vs Horizon sky lum: 79.4% (6098 river pixels)"
     },
     {
       "name": "no console errors",
       "pass": true,
-      "detail": ""
+      "detail": "Zero console errors"
     }
   ],
   "consoleErrors": [],
   "screenshots": [
-    "loop/shots/01_spawn.png",
-    "loop/shots/02_walked.png",
-    "loop/shots/04_orbit_angle.png",
-    "loop/shots/03_panel.png"
+    "loop/shots/01_daytime_landscape_spawn.png"
   ],
   "passed": true
 }
