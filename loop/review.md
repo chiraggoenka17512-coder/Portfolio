@@ -1,121 +1,89 @@
-# 📋 Phase 1 Code & Visual Review: Empty World (Round 2)
+# Phase 2 Code Review: Floating Island with Face Shading
 
-**Target:** `d:\Portfolio\index.html`  
-**Specification:** `loop/spec.md`  
-**Test Contract:** `loop/contract.md`  
-**Evaluation Report:** `loop/report.json`  
-**Screenshots:** `loop/shots/01_spawn.png`, `loop/shots/02_walked.png`, `loop/shots/03_panel.png`  
-**Patch:** `loop/diff.patch`  
-**Review Round:** 2 (Follow-up to Round 1)
+## Summary & Scope
+Review of Phase 2 implementation for the 3D Minecraft Portfolio.
+- Evaluated files: `index.html`, `loop/browser_check.js`, `loop/diff.patch`, `loop/report.json`.
+- Evaluated visual artifacts: `loop/shots/01_spawn.png`, `loop/shots/02_walked.png`, `loop/shots/04_orbit_angle.png`, `loop/shots/03_panel.png`.
 
 ---
 
-## 1. Executive Summary
+## Evaluation Against Requirements
 
-- **Verdict:** **PASS**
-- **Findings Count:** 0 BLOCKER, 0 MAJOR, 0 MINOR
-- **Summary:** All issues identified in Round 1 have been completely resolved. The contract hook `window.__game.activePanel` now accurately reflects `'spawn'` upon panel opening and `null` upon dismissal. Keyboard repeat events are guarded against rapid flickering on `KeyE`, and WASD player displacement is cleanly inhibited while modals are active. Furthermore, increasing the camera eye height to $y = 1.4$ completely resolves the 2D collinearity defect, rendering the 3D emerald cube with distinct multi-face Lambertian shading and tangible depth. All automated Playwright checks in `loop/report.json` pass with zero console errors.
+### 1. Island Voxel Structure & Face Shading
+- **Multi-layer Island**:
+  - Top layer ($y = 0$): 596 grass blocks rendered with custom procedural 16x16 pixel textures (green top `#5fa83b`, side overhang, dark dirt bottom).
+  - Sub-surface layer ($y = -1$): 494 earth dirt blocks (`#79553a`).
+  - Underbelly keel layers ($y = -2$ to $-4$): 245 slate grey stone blocks (`#6b7280` / `#4b5563`), naturally tapering inward ($dist \le 0.76 \rightarrow 0.52 \rightarrow 0.30$).
+  - Total block count: 1,335 blocks across $40 \times 16$ dimensions, exceeding the $30 \times 12$ minimum requirement.
+- **Directional Face Shading**:
+  - Implemented via directional Lambert multipliers per face:
+    - $+Y$ (Top): $1.00$ (brightest)
+    - $\pm X$ (Sides): $0.80$
+    - $\pm Z$ (Sides): $0.72$ (ensures cross-axial contrast)
+    - $-Y$ (Bottom): $0.45$ (darkest tone)
+  - Directional light placed at `[-15, 30, 20]` (intensity $0.90$) and ambient light ($0.55$), creating high-contrast cube edges visible from every angle.
+- **Rendering Performance**:
+  - All 1,335 blocks are batched into 3 `THREE.InstancedMesh` instances (`grassMesh`, `dirtMesh`, `stoneMesh`).
+  - Island geometry renders in minimal draw calls.
 
----
+### 2. Player, Controls & Camera
+- **Player Avatar**:
+  - Fully modeled voxel character (head with hair and eye pupils, cyan shirt torso, swinging arms, moving legs, dark shoes).
+  - Standing height properly aligned with the top island surface ($y = 1.0$ player center, feet at $y = 0.5$).
+- **Movement & Orbit**:
+  - WASD moves relative to camera yaw (`fwdX`, `fwdZ`, `rgtX`, `rgtZ`).
+  - Walk animation modulates limb swing angles with smooth damping upon stopping.
+  - Left-click drag rotates camera yaw and pitch.
+  - Mouse wheel zooms camera follow distance between 3.0 and 18.0 units.
+- **Loop Performance**:
+  - Zero heap object allocations (`new THREE.Vector3()`, etc.) inside the `animate()` render loop. All vector calculations use local scalar variables and in-place math, eliminating garbage collection spikes.
 
-## 2. Evaluation Against Phase 1 Specification (`loop/spec.md`)
+### 3. Contract Hooks & Test Suite
+- `window.__game`:
+  - `player.position`: `{ x, y, z }` (verified updated during movement).
+  - `player.yaw`: number (verified updated during mouse drag).
+  - `island.blockCount`: `1335` (verified $> 100$).
+  - `island.dimensions`: `{ x: 40, z: 16 }` (verified).
+  - `buildings`: `[]` (ready for Phase 3).
+  - `activePanel`: `null` (or `"spawn"` when modal is open).
+- `READY` console log triggered on the first rendered frame.
+- DOM elements `#canvas-container`, `#hud`, `#panel`, `#panel-title`, `#panel-close` all present and functional.
+- All 9 Playwright automated checks in `loop/report.json` passed with 0 console errors.
 
-| Requirement | Spec Criteria | Round 1 | Round 2 Status | Details |
-| :--- | :--- | :---: | :---: | :--- |
-| **1. Three.js Setup** | CDN `three.min.js` (r128), single self-contained `index.html` | PASS | **PASS** | Cloudflare CDN r128 loaded cleanly, single file structure maintained without external bundle dependencies. |
-| **2. Visuals** | Flat blue sky `#5c94fc`, untextured cube at $(0, 0.5, 0)$, directional + ambient light | PASS | **PASS** | Clear blue sky `#5c94fc`, emerald green cube at $(0, 0.5, 0)$, directional light at $(-10, 20, 10)$ and ambient light. Elevated eye height ($y = 1.4$) reveals the top face with crisp 3D Lambertian shading. |
-| **3. Player & Movement** | Player at $(0, 1, 5)$ facing cube, WASD keyboard translation | PASS | **PASS** | Player coordinates at $(0, 1, 5)$ facing cube at $(0, 0.5, 0)$. Smooth WASD vector translation along camera frustum. |
-| **4. Contract Hooks** | `window.__game` (`player.position`, `buildings: []`, `activePanel: null`), `console.log("READY")` on first render | FAIL | **PASS** | `window.__game` exposes initial state correctly. `console.log("READY")` logged on first frame. `activePanel` contract hook fixed. |
-| **5. DOM Hooks** | `#hud`, `#panel`, `#panel-title`, `#panel-close`; `KeyE` toggles (`activePanel = "spawn"`), `Esc`/`close` closes (`null`) | FAIL | **PASS** | `#hud`, `#panel`, `#panel-title`, `#panel-close` present. `KeyE` toggles modal with `activePanel = "spawn"`; `Escape` and `#panel-close` click dismiss with `activePanel = null`. |
-
----
-
-## 3. Resolution of Previous Findings
-
-### 1. 🟢 [RESOLVED] Blocker: Contract Hook Value Mismatch (`activePanel`)
-- **Status in Round 1:** `activePanel` was set to `'test'` instead of `'spawn'`.
-- **Verification in Round 2:**
-  - `openPanel(id = 'spawn')` defaults to `'spawn'`.
-  - `togglePanel(id = 'spawn')` defaults to `'spawn'`.
-  - Event listener on `KeyE` invokes `togglePanel('spawn')`.
-  - `closePanel()` sets `window.__game.activePanel = null`.
-  - `panelClose` click event invokes `closePanel()`, resetting to `null`.
-- **Verdict:** **FIXED & VERIFIED**.
-
-### 2. 🟢 [RESOLVED] Major: Keyboard Repeat Guard on `KeyE`
-- **Status in Round 1:** Holding `KeyE` triggered repeating `keydown` events, causing rapid open/close toggle flicker.
-- **Verification in Round 2:**
-  - Line 233 in `index.html`: `if (e.repeat) return;` immediately suppresses OS keyboard auto-repeat events. Single press opens/closes deterministically without jitter.
-- **Verdict:** **FIXED & VERIFIED**.
-
-### 3. 🟢 [RESOLVED] Major: Movement Invalidation During Active Modal
-- **Status in Round 1:** WASD translation continued in background while modal dialog was open.
-- **Verification in Round 2:**
-  - Lines 331–336 in `index.html`:
-    ```javascript
-    if (!window.__game.activePanel) {
-      if (keys['KeyW'] || keys['w']) moveZ += 1;
-      if (keys['KeyS'] || keys['s']) moveZ -= 1;
-      if (keys['KeyA'] || keys['a']) moveX -= 1;
-      if (keys['KeyD'] || keys['d']) moveX += 1;
-    }
-    ```
-  - Movement vectors are zeroed out while `window.__game.activePanel` is non-null, isolating UI interaction.
-- **Verdict:** **FIXED & VERIFIED**.
-
-### 4. 🟢 [RESOLVED] Minor: Cube Collinearity and 3D Visual Depth
-- **Status in Round 1:** Camera eye height at $y = 1.0$ lined up with the top edge of the cube, creating a flat 2D rectangle.
-- **Verification in Round 2:**
-  - `eyeHeight` set to `0.4`, positioning the camera at $y = 1.4$ while looking toward $(0, 0.5, 0)$.
-  - In `01_spawn.png`, the cube clearly displays its upper face illuminated in bright lime green, contrasted with the deeper green front face, creating undeniable 3D perspective and depth.
-- **Verdict:** **FIXED & VERIFIED**.
+### 4. Visual Review
+- `01_spawn.png`: Authentic Minecraft aesthetic with sky fog, hotbar HUD, crosshair, and grass texture variance with bevel highlights. Cliff drop-off visible on the left perimeter.
+- `02_walked.png`: Player walking forward with limb animation active and third-person camera tracking.
+- `04_orbit_angle.png`: Angled orbit perspective confirms 3D volumetric depth with clearly shaded cube faces and visible terraced elevation.
+- `03_panel.png`: Clean retro-styled modal panel with crisp high-contrast border and text-shadowing, correctly pausing player controls.
 
 ---
 
-## 4. Visual Verification of Screenshots (`loop/shots/`)
+## Findings
 
-### `01_spawn.png` (Spawn State)
-- **Sky Color:** Authentic daytime Minecraft blue `#5c94fc`.
-- **HUD & Reticle:** Center crosshair cleanly rendered; top bar displayed in `#212121` overlay with `VT323` pixel font.
-- **3D Depth & Shading:** The emerald cube exhibits clear two-face visibility. The top face receives direct light from $(-10, 20, 10)$, creating a distinct contrast with the shaded front face. The world immediately reads as a 3D voxel space.
+### BLOCKER
+*None.*
 
-### `02_walked.png` (Forward Traversal)
-- **Motion Verification:** Player translates smoothly forward along the camera gaze vector, traveling past $z = 0$.
-- **State Integrity:** Coordinate tracking in `report.json` registers displacement from $z = 5.0$ to $z = -1.0664$.
+### MAJOR
+*None.*
 
-### `03_panel.png` (Modal GUI)
-- **Minecraft GUI Aesthetic:** Beveled gray box with outer 4px black border, `#ffffff` highlights, `#555555` lowlights, and classic `[X]` close button.
-- **Text & Hierarchy:** Crisp header reading `"Project Inspector"` and descriptive body copy.
-- **Overlay State:** `#panel` is visible and centered over the scene.
+### MINOR
 
----
+1. **HUD Info Element Drag Passthrough**
+   - **File**: `index.html`, line 314
+   - **Detail**: The `mousedown` listener checks `if (e.target.closest && e.target.closest('#panel')) return;`. While `#hud` has `pointer-events: none;`, the child `.hud-info` has `pointer-events: auto;`. Clicking and dragging text in the instruction bar initiates camera orbit.
+   - **Expected Fix**: Update the check to ignore clicks on any HUD interactive elements:
+     ```javascript
+     if (e.target.closest && (e.target.closest('#panel') || e.target.closest('.hud-info'))) return;
+     ```
 
-## 5. Automated Check Results (`loop/report.json`)
-
-```json
-{
-  "checks": [
-    { "name": "canvas renders", "pass": true, "detail": "" },
-    { "name": "game hook exposed", "pass": true, "detail": "" },
-    { "name": "WASD moves player", "pass": true, "detail": "{\"start\":{\"x\":0,\"y\":1,\"z\":5},\"after\":{\"x\":0,\"y\":1,\"z\":-1.066400000000002}}" },
-    { "name": "E opens panel", "pass": true, "detail": "" },
-    { "name": "Esc closes panel", "pass": true, "detail": "" },
-    { "name": "close button works", "pass": true, "detail": "" },
-    { "name": "no console errors", "pass": true, "detail": "" }
-  ],
-  "consoleErrors": [],
-  "passed": true
-}
-```
-
-- **Passed Checks:** 7 / 7 (100%)
-- **Console Errors:** 0
-- **Page Errors:** 0
+2. **Player Yaw vs Avatar Heading Semantics**
+   - **File**: `index.html`, line 333
+   - **Detail**: `window.__game.player.yaw` is updated with `cameraYaw`, while `playerAvatar.rotation.y` is oriented according to `Math.atan2(moveX, moveZ)` during movement.
+   - **Expected Fix**: While this satisfies the current test hook checking camera orbit delta, in future phases it will be helpful to expose both `camera.yaw` and `player.yaw` (or `avatarYaw`) to prevent ambiguity in projectile/interaction raycasting.
 
 ---
 
-## 6. Final Verdict
+## Verdict
+**PASS**
 
-# 🏁 PASS
-
-Phase 1 ("Empty World") meets all functional, visual, and architectural requirements defined in `loop/spec.md` and `loop/contract.md`. The implementation is robust, adheres strictly to contract hooks, renders with authentic Minecraft aesthetics, and passes all automated browser verification gates. Ready for Phase 2 progression.
+The Phase 2 implementation fully satisfies all functional, architectural, performance, and visual requirements specified in `loop/spec.md`. The floating island renders cleanly with authentic directional face shading, high-performance instancing, and responsive third-person orbit controls.

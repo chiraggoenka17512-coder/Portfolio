@@ -11,9 +11,19 @@
       "detail": ""
     },
     {
+      "name": "island blocks rendered",
+      "pass": true,
+      "detail": "Block count: 1335"
+    },
+    {
       "name": "WASD moves player",
       "pass": true,
-      "detail": "{\"start\":{\"x\":0,\"y\":1,\"z\":5},\"after\":{\"x\":0,\"y\":1,\"z\":-1.066400000000002}}"
+      "detail": "{\"start\":{\"x\":0,\"y\":1,\"z\":2},\"after\":{\"x\":0,\"y\":1,\"z\":-2.8}}"
+    },
+    {
+      "name": "mouse drag orbits camera",
+      "pass": true,
+      "detail": "Angle delta: 0.9999999999999999"
     },
     {
       "name": "E opens panel",
@@ -40,6 +50,7 @@
   "screenshots": [
     "loop/shots/01_spawn.png",
     "loop/shots/02_walked.png",
+    "loop/shots/04_orbit_angle.png",
     "loop/shots/03_panel.png"
   ],
   "passed": true

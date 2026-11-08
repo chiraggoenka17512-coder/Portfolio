@@ -45,7 +45,11 @@ const path = require('path');
     const start = await page.evaluate(() => window.__game?.player?.position ?? null);
     check('game hook exposed', start !== null);
 
-    // 3. Walk forward
+    // 3. Island generated & rendered
+    const islandBlocks = await page.evaluate(() => window.__game?.island?.blockCount ?? 0);
+    check('island blocks rendered', islandBlocks > 100, `Block count: ${islandBlocks}`);
+
+    // 4. Walk forward
     await page.keyboard.down('KeyW');
     await page.waitForTimeout(1500);
     await page.keyboard.up('KeyW');
@@ -54,27 +58,38 @@ const path = require('path');
     check('WASD moves player', !!moved, JSON.stringify({ start, after }));
     await shot(page, '02_walked');
 
-    // 4. Open the nearest project panel with E
+    // 5. Orbit camera via mouse drag
+    const camBefore = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
+    await page.mouse.move(640, 360);
+    await page.mouse.down();
+    await page.mouse.move(440, 300, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(500);
+    const camAfter = await page.evaluate(() => window.__game?.player?.yaw ?? 0);
+    check('mouse drag orbits camera', Math.abs(camAfter - camBefore) > 0.05, `Angle delta: ${camAfter - camBefore}`);
+    await shot(page, '04_orbit_angle');
+
+    // 6. Open the nearest project panel with E
     await page.keyboard.press('KeyE');
     await page.waitForTimeout(800);
     const panelOpen = await page.isVisible('#panel').catch(() => false);
     check('E opens panel', panelOpen);
     await shot(page, '03_panel');
 
-    // 5. Close with Escape
+    // 7. Close with Escape
     await page.keyboard.press('Escape');
     await page.waitForTimeout(500);
     const panelClosed = !(await page.isVisible('#panel').catch(() => false));
     check('Esc closes panel', panelClosed);
 
-    // 6. Click-driven check: the close button works too
+    // 8. Click-driven check: the close button works too
     await page.keyboard.press('KeyE');
     await page.waitForTimeout(800);
     await page.click('#panel-close').catch(() => {});
     await page.waitForTimeout(500);
     check('close button works', !(await page.isVisible('#panel').catch(() => false)));
 
-    // 7. No errors during the run
+    // 9. No errors during the run
     check(
       'no console errors', 
       report.consoleErrors.length === 0,
