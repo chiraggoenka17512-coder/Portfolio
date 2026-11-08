@@ -323,3 +323,91 @@ When approved to build, follow this sequence:
 - [ ] Every building has a sign with a problem/solution summary and proximity prompt.
 - [ ] Minimap tracks discovered landmarks.
 - [ ] 0 console errors; steady 60 FPS on desktop and mobile.
+
+---
+
+## 🔁 10. The Agent Loop: Autonomous Closed-Loop Engineering System
+
+This codebase is governed by an **Eval-Driven Agent Loop**. Autonomous agents working on this project must never rely on self-assertion or assume a visual change works. Every feature, bug fix, or refactor must run through the automated feedback loop.
+
+### 10.1 The 5-Stage Agent Loop Lifecycle
+
+```
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 1. SPECIFY (`loop/spec.md`)                                 │
+  │    Write measurable criteria: colors, bounds, pixel bands   │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 2. IMPLEMENT (`textures/<module>.js`)                       │
+  │    Isolated single-file module (Zero Merge Conflicts)       │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 3. VERIFY VIA HEADLESS BROWSER (`node loop/<test>.js`)      │
+  │    Playwright captures screenshot, decodes pixels & scene   │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 │
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 4. REPORT & GATE CHECK (`loop/report.json`)                 │
+  │    Check: All pass? (8/8)                                   │
+  └──────────────┬───────────────────────────────┬──────────────┘
+                 │ (FAIL)                        │ (PASS)
+                 ▼                               ▼
+  ┌───────────────────────────────┐ ┌───────────────────────────┐
+  │ 5a. SURGICAL FIX              │ │ 5b. ATOMIC COMMIT & PUSH  │
+  │     Inspect report detail,    │ │     git add & commit      │
+  │     fix root cause, re-run    │ │     git push origin main  │
+  └──────────────┬────────────────┘ └───────────────────────────┘
+                 │                               │
+                 └───────────────────────────────┘
+```
+
+### 10.2 Non-Conflicting Multi-Agent Execution Rules
+When deploying multiple subagents in parallel (e.g., one agent on the Villager NPC, one on the Objective HUD, one on Building Architecture):
+1. **Strict File Isolation**: Each subagent owns **exactly one new file** in `textures/` (e.g. `textures/guide_villager.js`, `textures/objective_hud.js`, `textures/portfolio_structures.js`).
+2. **Never Edit `index.html` in Parallel**: Subagents must not write to `index.html`. Only the lead orchestrator or an atomic integration script wires completed modules into `index.html`.
+3. **Universal Export Contract**: Every module must export a universal UMD / browser global factory function:
+   ```javascript
+   (function (root, factory) {
+     if (typeof module === 'object' && module.exports) module.exports = factory();
+     else root.ModuleName = factory();
+   }(typeof self !== 'undefined' ? self : this, function () {
+     return { init, update, dispose };
+   }));
+   ```
+
+### 10.3 The Verification Engine (`loop/`)
+* **Local HTTP Daemon**: Runs in background on `http://localhost:8000` (`python -m http.server 8000`).
+* **Playwright Test Runner**: Uses Node.js + Playwright Chromium (`node loop/<phase>_check.js`).
+* **In-Browser Pixel & Scene Evaluation**:
+  ```javascript
+  // Decode screenshot to HTML5 canvas and analyze real pixels
+  const imgData = ctx.getImageData(0, 0, width, height).data;
+  // Verify color spaces (HSV/HSL), luminance thresholds, and scene contract
+  const sceneState = await page.evaluate(() => window.__game);
+  ```
+* **Structured Output (`loop/report.json`)**:
+  ```json
+  {
+    "checks": [
+      { "name": "sun disc visible in upper sky", "pass": true, "detail": "1402 bright pixels near (792, 5)" },
+      { "name": "water pixels darker than sky", "pass": true, "detail": "Water lum: 47.4% vs Horizon: 79.4%" },
+      { "name": "no console errors", "pass": true, "detail": "Zero console errors" }
+    ],
+    "consoleErrors": [],
+    "screenshots": ["loop/shots/01_daytime_landscape_spawn.png"],
+    "passed": true
+  }
+  ```
+
+### 10.4 The Hard Stop Gate
+An agent's task is **NOT DONE** until:
+1. `node loop/<phase>_check.js` exits with code 0 and logs `REPORT: PASS (N/N)`.
+2. `loop/report.json` contains `"passed": true` and `"consoleErrors": []`.
+3. A visual screenshot is preserved in `loop/shots/` as proof.
+4. Changes are committed and pushed to `origin main`.
+
