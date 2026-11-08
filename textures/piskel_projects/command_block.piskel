@@ -1,0 +1,13 @@
+{
+  "modelVersion": 2,
+  "piskel": {
+    "name": "command_block",
+    "description": "Original 16x16 voxel tile: command_block",
+    "fps": 12,
+    "height": 16,
+    "width": 16,
+    "layers": [
+      "{\"name\": \"Layer 1\", \"opacity\": 1, \"frameCount\": 1, \"chunks\": [{\"layout\": [[0]], \"base64PNG\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAk0lEQVR4nGN08Qn7z0AmuHf7BgMLjEEO+PD2JcQAGIcUICAsDqZZsAkSYzMMsOBSdLfiHQpfuUMIqzomvJpdmyAYi4F4DQADqEYMNtEGEAmYcMrsrsPORgMs2ARBAQb2M5JGXIHIgstkkAZYdOGLXhZ0AWwJClkM3TAWdMXEJiasBpCanFEMINVmuAGgnEiOzTAAAIK2NCGiG3YHAAAAAElFTkSuQmCC\"}]}"
+    ]
+  }
+}

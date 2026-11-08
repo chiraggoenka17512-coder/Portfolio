@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chirag | Minecraft Portfolio // Class 9 Agentic Architect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mc-gray-dark: #212121;
+      --mc-gray-mid: #4a4a4a;
+      --mc-gray-light: #c6c6c6;
+      --mc-gray-border-dark: #373737;
+      --mc-gray-border-light: #ffffff;
+      --mc-slot-bg: #8b8b8b;
+      --mc-slot-border-dark: #373737;
+      --mc-slot-border-light: #ffffff;
+      --mc-green: #55ff55;
+      --mc-dark-green: #00aa00;
+      --mc-gold: #ffaa00;
+      --mc-yellow: #ffff55;
+      --mc-blue: #5555ff;
+      --mc-aqua: #55ffff;
+      --mc-red: #ff5555;
+      --mc-purple: #aa00aa;
+      --mc-xp: #7bed36;
+      --mc-font-pixel: 'VT323', monospace;
+      --mc-font-heading: 'Silkscreen', cursive, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      image-rendering: pixelated;
+      user-select: none;
+    }
+
+    body {
+      background-color: #121016;
+      color: #ffffff;
+      font-family: var(--mc-font-pixel);
+      font-size: 20px;
+      line-height: 1.2;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Ambient dynamic Minecraft background */
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Top Sky / Banner Overlay */
+    .dirt-pattern-bar {
+      height: 8px;
+      background: repeating-linear-gradient(
+        90deg,
+        #573d26, #573d26 8px,
+        #49321f 8px, #49321f 16px,
+        #6e4e32 16px, #6e4e32 24px
+      );
+      border-bottom: 2px solid #2d1e13;
+      width: 100%;
+    }
+
+    /* Header & Navigation */
+    header {
+      padding: 24px 16px 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    .minecraft-title-wrap {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .minecraft-title {
+      font-family: var(--mc-font-heading);
+      font-size: clamp(24px, 5vw, 44px);
+      letter-spacing: 2px;
+      color: #f2f2f2;
+      text-shadow: 
+        3px 3px 0 #3f3f3f,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        4px 4px 0 #181818;
+      background: linear-gradient(180deg, #ffffff 40%, #a0a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: scaleY(1.05);
+    }
+
+    .splash-text {
+      position: absolute;
+      right: -40px;
+      bottom: -14px;
+      font-family: var(--mc-font-heading);
+      font-size: 14px;
+      color: var(--mc-yellow);
+      text-shadow: 2px 2px 0 #3f3f00;
+      transform: rotate(-15deg);
+      animation: splashPulse 1.2s infinite alternate ease-in-out;
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    @keyframes splashPulse {
+      0% { transform: rotate(-14deg) scale(0.96); }
+      100% { transform: rotate(-16deg) scale(1.08); }
+    }
+
+    /* Player Status HUD */
+    .player-hud {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 22px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .hud-element {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hearts, .hunger {
+      display: flex;
+      gap: 3px;
+    }
+
+    .icon-heart, .icon-drumstick {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+    }
+
+    .xp-bar-container {
+      width: clamp(200px, 40vw, 360px);
+      height: 12px;
+      background: #000;
+      border: 2px solid #373737;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .xp-bar-fill {
+      width: 95%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--mc-xp) 0,
+        var(--mc-xp) 10px,
+        #5dbb26 10px,
+        #5dbb26 12px
+      );
+    }
+
+    .xp-level-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mc-font-heading);
+      font-size: 14px;
+      color: var(--mc-xp);
+      text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Minecraft GUI Box (Classic 9-Slice Styling) */
+    .mc-gui-window {
+      background-color: var(--mc-gray-light);
+      border: 4px solid var(--mc-gray-border-dark);
+      box-shadow: 
+        inset 4px 4px 0 #ffffff,
+        inset -4px -4px 0 #555555,
+        0 8px 0 rgba(0, 0, 0, 0.45);
+      color: #212121;
+      padding: 16px;
+      position: relative;
+    }
+
+    .mc-gui-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #555555;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .mc-gui-title {
+      font-family: var(--mc-font-heading);
+      font-size: 18px;
+      color: #2e2e2e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-shadow: 1px 1px 0 #ffffff;
+    }
+
+    /* Quick Filter Tabs (Gamemodes) */
+    .gui-gamemodes {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Classic MC Buttons */
+    .mc-btn {
+      font-family: var(--mc-font-pixel);
+      font-size: 22px;
+      color: #e0e0e0;
+      background-color: #6b6b6b;
+      border: 3px solid #000000;
+      box-shadow: 
+        inset 2px 2px 0 #a8a8a8,
+        inset -2px -2px 0 #3a3a3a;
+      padding: 4px 14px;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 #1e1e1e;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.05s ease;
+      text-decoration: none;
+    }
+
+    .mc-btn:hover {
+      background-color: #587399;
+      color: #ffffa0;
+      box-shadow: 
+        inset 2px 2px 0 #89a7cf,
+        inset -2px -2px 0 #28374d;
+    }
+
+    .mc-btn:active {
+      box-shadow: 
+        inset -2px -2px 0 #89a7cf,
+        inset 2px 2px 0 #28374d;
+      transform: translate(1px, 1px);
+    }
+
+    .mc-btn.active {
+      background-color: #3b8526;
+      box-shadow: 
+        inset 2px 2px 0 #7bed36,
+        inset -2px -2px 0 #1b4b0e;
+      color: #ffffff;
+    }
+
+    /* Hotbar HUD at bottom */
+    .hotbar-container {
+      position: sticky;
+      bottom: 12px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+    }
+
+    .hotbar-tooltip {
+      background: rgba(16, 0, 16, 0.9);
+      border: 2px solid #2a004a;
+      box-shadow: 0 0 8px rgba(170, 0, 170, 0.4);
+      padding: 4px 12px;
+      border-radius: 2px;
+      color: #ffffff;
+      font-size: 19px;
+      text-shadow: 2px 2px 0 #000;
+      pointer-events: none;
+      min-height: 32px;
+    }
+
+    .hotbar-tooltip span.rarity-epic { color: #d67bff; }
+    .hotbar-tooltip span.rarity-rare { color: #55ffff; }
+    .hotbar-tooltip span.rarity-uncommon { color: #ffff55; }
+    .hotbar-tooltip span.rarity-common { color: #ffffff; }
+
+    .mc-hotbar {
+      display: flex;
+      background: #8f8f8f;
+      border: 4px solid #3c3c3c;
+      box-shadow: 
+        inset 3px 3px 0 #ffffff,
+        inset -3px -3px 0 #4a4a4a,
+        0 6px 16px rgba(0,0,0,0.8);
+      padding: 3px;
+      border-radius: 2px;
+    }
+
+    .hotbar-slot {
+      width: 52px;
+      height: 52px;
+      background: #8b8b8b;
+      border: 3px solid #373737;
+      box-shadow: 
+        inset -2px -2px 0 #ffffff,
+        inset 2px 2px 0 #373737;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      margin: 1px;
+      transition: background 0.1s;
+    }
+
+    .hotbar-slot:hover {
+      background: #a6a6a6;
+    }
+
+    .hotbar-slot.selected {
+      outline: 3px solid #ffffff;
+      z-index: 2;
+      background: #9d9d9d;
+      box-shadow: 
+        inset -2px -2px 0 #ffffff,
+        inset 2px 2px 0 #222222,
+        0 0 10px rgba(255,255,255,0.7);
+    }
+
+    .slot-key-number {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 14px;
+      color: #a0a0a0;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .slot-count {
+      position: absolute;
+      bottom: 1px;
+      right: 3px;
+      font-size: 16px;
+      color: #ffffff;
+      text-shadow: 2px 2px 0 #3f3f3f;
+    }
+
+    .item-icon {
+      width: 32px;
+      height: 32px;
+      pointer-events: none;
+      filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+    }
+
+    /* Grid & Cards inside the MC GUI */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 16px;
+    }
+
+    .project-card {
+      background: #dbdbdb;
+      border: 3px solid #555555;
+      box-shadow: 
+        inset 2px 2px 0 #ffffff,
+        inset -2px -2px 0 #777777;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .project-card:hover {
+      background: #e6e6e6;
+      border-color: #2b5688;
+      box-shadow: 
+        inset 2px 2px 0 #89a7cf,
+        inset -2px -2px 0 #28374d;
+      transform: translateY(-2px);
+    }
+
+    .project-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .project-slot-icon {
+      width: 44px;
+      height: 44px;
+      background: #8b8b8b;
+      border: 2px solid #373737;
+      box-shadow: 
+        inset -2px -2px 0 #ffffff,
+        inset 2px 2px 0 #373737;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .project-title-area {
+      flex: 1;
+    }
+
+    .project-name {
+      font-family: var(--mc-font-heading);
+      font-size: 16px;
+      color: #1a1a1a;
+      text-shadow: 1px 1px 0 #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .enchantment-tag {
+      font-size: 13px;
+      color: #7928ca;
+      font-family: var(--mc-font-pixel);
+      text-shadow: none;
+      background: #e9d5ff;
+      padding: 1px 5px;
+      border: 1px solid #c084fc;
+      border-radius: 2px;
+    }
+
+    .project-sub {
+      font-size: 16px;
+      color: #4b5563;
+    }
+
+    .project-desc {
+      font-size: 18px;
+      color: #2d3748;
+      line-height: 1.25;
+      background: rgba(255,255,255,0.6);
+      padding: 8px;
+      border: 1px solid #b8b8b8;
+    }
+
+    .loot-table-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .loot-tag {
+      background: #4a4a4a;
+      color: #55ff55;
+      border: 1px solid #1a1a1a;
+      padding: 2px 8px;
+      font-size: 15px;
+      text-shadow: 1px 1px 0 #000;
+      border-radius: 1px;
+    }
+
+    .loot-tag.tech-special {
+      color: #55ffff;
+    }
+
+    /* Modal / Inspect GUI Window */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .mc-modal-box {
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background-color: var(--mc-gray-light);
+      border: 5px solid #282828;
+      box-shadow: 
+        inset 4px 4px 0 #ffffff,
+        inset -4px -4px 0 #444444,
+        0 12px 30px rgba(0,0,0,0.8);
+      padding: 24px;
+      color: #1a1a1a;
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      font-size: 22px;
+      padding: 0;
+      line-height: 28px;
+    }
+
+    /* Advancement Toast Notification */
+    .advancement-toast {
+      position: fixed;
+      top: 20px;
+      right: -380px;
+      width: 330px;
+      background: #212121;
+      border: 3px solid #ffaa00;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.8);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 999;
+      transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .advancement-toast.show {
+      right: 20px;
+    }
+
+    .advancement-icon {
+      width: 40px;
+      height: 40px;
+      background: #373737;
+      border: 2px solid #555555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .advancement-text {
+      flex: 1;
+    }
+
+    .advancement-header {
+      font-family: var(--mc-font-heading);
+      font-size: 13px;
+      color: var(--mc-yellow);
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .advancement-title {
+      font-family: var(--mc-font-pixel);
+      font-size: 20px;
+      color: #ffffff;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Minecraft Terminal / Command Block Console */
+    .terminal-section {
+      background: #141414;
+      border: 3px solid #333333;
+      padding: 12px;
+      color: #55ff55;
+      font-family: var(--mc-font-pixel);
+      font-size: 19px;
+      box-shadow: inset 2px 2px 0 #000;
+      margin-top: 12px;
+    }
+
+    .terminal-history {
+      max-height: 120px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .terminal-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .terminal-prompt {
+      color: var(--mc-gold);
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: var(--mc-font-pixel);
+      font-size: 20px;
+    }
+
+    /* Character Profile Tab */
+    .profile-card-grid {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 20px;
+    }
+
+    @media(max-width: 650px) {
+      .profile-card-grid {
+        grid-template-columns: 1fr;
+      }
+      .hotbar-slot {
+        width: 38px;
+        height: 38px;
+      }
+      .item-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .player-avatar-box {
+      background: #999999;
+      border: 3px solid #373737;
+      box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #4a4a4a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .avatar-preview {
+      width: 96px;
+      height: 96px;
+      background: #2b3a4a;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    /* Sound settings toggle */
+    .controls-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    /* Lore tooltip box */
+    .lore-box {
+      background: #100010;
+      border: 2px solid #2c004d;
+      color: #ffffff;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .lore-title { color: #aa00aa; font-family: var(--mc-font-heading); font-size: 14px; margin-bottom: 4px; }
+    .lore-blue { color: #55ffff; }
+    .lore-gray { color: #aaaaaa; }
+    .lore-yellow { color: #ffff55; }
+    .lore-red { color: #ff5555; }
+    .lore-green { color: #55ff55; }
+  </style>
+</head>
+<body>
+
+  <!-- Minecraft Sky & Particle Canvas -->
+  <canvas id="background-canvas"></canvas>
+
+  <!-- Top Dirt Bar Border -->
+  <div class="dirt-pattern-bar"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="controls-bar">
+      <button class="mc-btn" id="sound-toggle-btn" title="Toggle Sound FX">
+        <span>🔊 SFX: ON</span>
+      </button>
+      <button class="mc-btn" id="time-toggle-btn" title="Switch Day/Night">
+        <span>☀️ TIME: DAY</span>
+      </button>
+    </div>
+
+    <div class="minecraft-title-wrap">
+      <h1 class="minecraft-title">CHIRAG'S REALM</h1>
+      <div class="splash-text" id="splash-text" title="Click for new splash!">Loading world...</div>
+    </div>
+
+    <!-- Minecraft Player Stats HUD -->
+    <div class="player-hud">
+      <div class="hud-element" title="Hearts: 10/10 Full Health">
+        <div class="hearts">
+          <!-- 10 Hearts -->
+          <svg class="icon-heart" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="1" y="1" width="7" height="7" fill="#ff2222"/><rect x="2" y="1" width="2" height="1" fill="#fff"/><rect x="5" y="1" width="2" height="1" fill="#fff"/><rect x="1" y="2" width="7" height="3" fill="#ff2222"/><rect x="2" y="5" width="5" height="2" fill="#cc1111"/><rect x="3" y="7" width="3" height="1" fill="#880000"/><rect x="4" y="8" width="1" height="1" fill="#000"/></svg>
+          <svg class="icon-heart" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="1" y="1" width="7" height="7" fill="#ff2222"/><rect x="2" y="1" width="2" height="1" fill="#fff"/><rect x="5" y="1" width="2" height="1" fill="#fff"/><rect x="1" y="2" width="7" height="3" fill="#ff2222"/><rect x="2" y="5" width="5" height="2" fill="#cc1111"/><rect x="3" y="7" width="3" height="1" fill="#880000"/><rect x="4" y="8" width="1" height="1" fill="#000"/></svg>
+          <svg class="icon-heart" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="1" y="1" width="7" height="7" fill="#ff2222"/><rect x="2" y="1" width="2" height="1" fill="#fff"/><rect x="5" y="1" width="2" height="1" fill="#fff"/><rect x="1" y="2" width="7" height="3" fill="#ff2222"/><rect x="2" y="5" width="5" height="2" fill="#cc1111"/><rect x="3" y="7" width="3" height="1" fill="#880000"/><rect x="4" y="8" width="1" height="1" fill="#000"/></svg>
+          <svg class="icon-heart" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="1" y="1" width="7" height="7" fill="#ff2222"/><rect x="2" y="1" width="2" height="1" fill="#fff"/><rect x="5" y="1" width="2" height="1" fill="#fff"/><rect x="1" y="2" width="7" height="3" fill="#ff2222"/><rect x="2" y="5" width="5" height="2" fill="#cc1111"/><rect x="3" y="7" width="3" height="1" fill="#880000"/><rect x="4" y="8" width="1" height="1" fill="#000"/></svg>
+          <svg class="icon-heart" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="1" y="1" width="7" height="7" fill="#ff2222"/><rect x="2" y="1" width="2" height="1" fill="#fff"/><rect x="5" y="1" width="2" height="1" fill="#fff"/><rect x="1" y="2" width="7" height="3" fill="#ff2222"/><rect x="2" y="5" width="5" height="2" fill="#cc1111"/><rect x="3" y="7" width="3" height="1" fill="#880000"/><rect x="4" y="8" width="1" height="1" fill="#000"/></svg>
+        </div>
+      </div>
+
+      <div class="hud-element" style="flex-direction: column;">
+        <div class="xp-bar-container">
+          <div class="xp-bar-fill"></div>
+          <div class="xp-level-badge">9</div>
+        </div>
+        <span style="font-size: 16px; color: #a3e635;">CLASS 9 // LEVEL 9 ARCHITECT</span>
+      </div>
+
+      <div class="hud-element" title="Hunger: Full Stamina">
+        <div class="hunger">
+          <svg class="icon-drumstick" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="2" y="1" width="5" height="5" fill="#bd7331"/><rect x="3" y="2" width="2" height="2" fill="#e09e53"/><rect x="5" y="6" width="3" height="2" fill="#e5e5e5"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+          <svg class="icon-drumstick" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="2" y="1" width="5" height="5" fill="#bd7331"/><rect x="3" y="2" width="2" height="2" fill="#e09e53"/><rect x="5" y="6" width="3" height="2" fill="#e5e5e5"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+          <svg class="icon-drumstick" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="2" y="1" width="5" height="5" fill="#bd7331"/><rect x="3" y="2" width="2" height="2" fill="#e09e53"/><rect x="5" y="6" width="3" height="2" fill="#e5e5e5"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+          <svg class="icon-drumstick" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="2" y="1" width="5" height="5" fill="#bd7331"/><rect x="3" y="2" width="2" height="2" fill="#e09e53"/><rect x="5" y="6" width="3" height="2" fill="#e5e5e5"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+          <svg class="icon-drumstick" viewBox="0 0 9 9"><rect width="9" height="9" fill="#000"/><rect x="2" y="1" width="5" height="5" fill="#bd7331"/><rect x="3" y="2" width="2" height="2" fill="#e09e53"/><rect x="5" y="6" width="3" height="2" fill="#e5e5e5"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Stage -->
+  <main>
+
+    <!-- Navigation / Gamemode Tabs -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div class="gui-gamemodes">
+        <button class="mc-btn active" data-tab="projects" onclick="switchTab('projects')">⛏️ Projects (Builds)</button>
+        <button class="mc-btn" data-tab="about" onclick="switchTab('about')">📜 Player Lore (About)</button>
+        <button class="mc-btn" data-tab="skills" onclick="switchTab('skills')">🧪 Tech Alchemy</button>
+        <button class="mc-btn" data-tab="advancements" onclick="switchTab('advancements')">🏆 Advancements</button>
+      </div>
+      <div style="font-size: 16px; color: var(--mc-yellow); text-shadow: 1px 1px 0 #000;">
+        Press Keys [1 - 7] or Click Hotbar Slots Below!
+      </div>
+    </div>
+
+    <!-- TAB 1: PROJECTS (BUILDS) -->
+    <section id="tab-projects" class="mc-gui-window">
+      <div class="mc-gui-header">
+        <div class="mc-gui-title">
+          <span>📦 CRAFTED INVENTIONS & AGENTIC BUILDS</span>
+        </div>
+        <span style="font-size:16px; color:#555;">5 Legendary Items Detected</span>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- 1. VibeLens -->
+        <article class="project-card" onclick="openModal('vibelens')">
+          <div class="project-header">
+            <div class="project-slot-icon">
+              <!-- Pixel Eye of Ender / Lens -->
+              <svg class="item-icon" viewBox="0 0 16 16">
+                <rect x="5" y="2" width="6" height="2" fill="#14532d"/>
+                <rect x="3" y="4" width="10" height="8" fill="#15803d"/>
+                <rect x="4" y="5" width="8" height="6" fill="#22c55e"/>
+                <rect x="7" y="6" width="2" height="4" fill="#052e16"/>
+                <rect x="6" y="6" width="1" height="1" fill="#dcfce7"/>
+              </svg>
+            </div>
+            <div class="project-title-area">
+              <div class="project-name">
+                <span>VibeLens</span>
+                <span class="enchantment-tag">Unbreaking III</span>
+              </div>
+              <div class="project-sub">Zero-Day Reachability & De-Slop Engine</div>
+            </div>
+          </div>
+          <p class="project-desc">
+            A visual cleanup crew and zero-day reachability shield for apps built with AI. Visualizes hidden dead code in 3D galaxy maps, silences 85% of phantom security warnings via DAG reachability, and refactors generic AI UIs.
+          </p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">3D Spatial Topology</span>
+            <span class="loot-tag">ReachableSec DAG</span>
+            <span class="loot-tag">VibeWatcher CLI</span>
+            <span class="loot-tag">Aesthetic Compiler</span>
+          </div>
+        </article>
+
+        <!-- 2. CrashLens -->
+        <article class="project-card" onclick="openModal('crashlens')">
+          <div class="project-header">
+            <div class="project-slot-icon">
+              <!-- Pixel Netherite Shield / Lens -->
+              <svg class="item-icon" viewBox="0 0 16 16">
+                <rect x="4" y="2" width="8" height="2" fill="#475569"/>
+                <rect x="2" y="4" width="12" height="7" fill="#1e293b"/>
+                <rect x="3" y="11" width="10" height="2" fill="#0f172a"/>
+                <rect x="5" y="13" width="6" height="1" fill="#020617"/>
+                <rect x="7" y="5" width="2" height="4" fill="#38bdf8"/>
+                <rect x="5" y="7" width="6" height="2" fill="#38bdf8"/>
+              </svg>
+            </div>
+            <div class="project-title-area">
+              <div class="project-name">
+                <span>CrashLens</span>
+                <span class="enchantment-tag">Protection IV</span>
+              </div>
+              <div class="project-sub">Industrial Telemetry & Design Language</div>
+            </div>
+          </div>
+          <p class="project-desc">
+            High-density crash diagnostics and industrial-grade telemetry design framework. Refactors frail frontend components into resilient, dark-mode observability dashboards with real-time exception parsing.
+          </p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">Crash Diagnostics</span>
+            <span class="loot-tag">Dark Telemetry UI</span>
+            <span class="loot-tag">Zero Slop Standard</span>
+            <span class="loot-tag">TypeScript</span>
+          </div>
+        </article>
+
+        <!-- 3. ReconOS -->
+        <article class="project-card" onclick="openModal('reconos')">
+          <div class="project-header">
+            <div class="project-slot-icon">
+              <!-- Pixel Compass -->
+              <svg class="item-icon" viewBox="0 0 16 16">
+                <rect x="5" y="1" width="6" height="2" fill="#71717a"/>
+                <rect x="2" y="4" width="12" height="8" fill="#3f3f46"/>
+                <rect x="3" y="3" width="10" height="10" fill="#27272a"/>
+                <rect x="4" y="4" width="8" height="8" fill="#18181b"/>
+                <rect x="7" y="5" width="2" height="3" fill="#ef4444"/>
+                <rect x="7" y="8" width="2" height="3" fill="#38bdf8"/>
+              </svg>
+            </div>
+            <div class="project-title-area">
+              <div class="project-name">
+                <span>ReconOS</span>
+                <span class="enchantment-tag">Infinity I</span>
+              </div>
+              <div class="project-sub">Agentic Reconnaissance Operating System</div>
+            </div>
+          </div>
+          <p class="project-desc">
+            Autonomous reconnaissance and intelligent system scouting agent. Deploys targeted subagents to map attack surfaces, audit codebase vulnerabilities, trace data lineages, and coordinate defensive workflows.
+          </p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">Autonomous Agents</span>
+            <span class="loot-tag">OSINT & Surface Map</span>
+            <span class="loot-tag">Graph Memory</span>
+            <span class="loot-tag">Security Loops</span>
+          </div>
+        </article>
+
+        <!-- 4. LabelSense -->
+        <article class="project-card" onclick="openModal('labelsense')">
+          <div class="project-header">
+            <div class="project-slot-icon">
+              <!-- Pixel Golden Apple / Potion -->
+              <svg class="item-icon" viewBox="0 0 16 16">
+                <rect x="7" y="1" width="2" height="3" fill="#78350f"/>
+                <rect x="9" y="2" width="2" height="1" fill="#15803d"/>
+                <rect x="4" y="4" width="8" height="2" fill="#eab308"/>
+                <rect x="3" y="6" width="10" height="6" fill="#facc15"/>
+                <rect x="4" y="12" width="8" height="2" fill="#ca8a04"/>
+                <rect x="5" y="6" width="2" height="2" fill="#ffffff"/>
+              </svg>
+            </div>
+            <div class="project-title-area">
+              <div class="project-name">
+                <span>LabelSense</span>
+                <span class="enchantment-tag">Efficiency V</span>
+              </div>
+              <div class="project-sub">Multimodal Food AI & E-Commerce Overlay</div>
+            </div>
+          </div>
+          <p class="project-desc">
+            AI-powered packaged food label scanner that demystifies cryptic chemicals and additives into plain English. Features personalized health profiling (allergies, diets), quick-commerce shopping overlays (Blinkit), and side-by-side product comparisons.
+          </p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">Multimodal Vision</span>
+            <span class="loot-tag">Personal Health Engine</span>
+            <span class="loot-tag">Quick-Commerce Overlay</span>
+            <span class="loot-tag">Nutritional OCR</span>
+          </div>
+        </article>
+
+        <!-- 5. Agentic Architectures -->
+        <article class="project-card" onclick="openModal('agentic')">
+          <div class="project-header">
+            <div class="project-slot-icon">
+              <!-- Pixel Command Block -->
+              <svg class="item-icon" viewBox="0 0 16 16">
+                <rect x="2" y="2" width="12" height="12" fill="#c2410c"/>
+                <rect x="4" y="4" width="8" height="8" fill="#ea580c"/>
+                <rect x="6" y="6" width="4" height="4" fill="#fdba74"/>
+                <circle cx="8" cy="8" r="1.5" fill="#ffffff"/>
+                <rect x="3" y="3" width="1" height="1" fill="#fff"/>
+                <rect x="12" y="3" width="1" height="1" fill="#fff"/>
+              </svg>
+            </div>
+            <div class="project-title-area">
+              <div class="project-name">
+                <span>Agentic Architectures</span>
+                <span class="enchantment-tag">Mending I</span>
+              </div>
+              <div class="project-sub">Multi-Agent Loops & Orchestration</div>
+            </div>
+          </div>
+          <p class="project-desc">
+            Orchestrating autonomous multi-agent teams with eval-driven verification, tool grounding, self-correcting review gates, and subagent state dispatchers designed for high-reliability production workflows.
+          </p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">Eval-Driven Loops</span>
+            <span class="loot-tag">Tool Grounding</span>
+            <span class="loot-tag">Subagent Meshing</span>
+            <span class="loot-tag">Self-Healing Code</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: ABOUT / PLAYER LORE -->
+    <section id="tab-about" class="mc-gui-window" style="display: none;">
+      <div class="mc-gui-header">
+        <div class="mc-gui-title">
+          <span>📜 PLAYER BIO // CHIRAG</span>
+        </div>
+        <span style="font-size:16px; color:#555;">Spawn Location: Class 9 • Realm of Agentic AI</span>
+      </div>
+
+      <div class="profile-card-grid">
+        <div class="player-avatar-box">
+          <div class="avatar-preview">
+            <!-- 8-Bit Chirag Pixel Face -->
+            <svg viewBox="0 0 8 8" width="80" height="80">
+              <!-- Hair -->
+              <rect x="1" y="0" width="6" height="2" fill="#1e1b18"/>
+              <rect x="0" y="1" width="1" height="3" fill="#1e1b18"/>
+              <rect x="7" y="1" width="1" height="3" fill="#1e1b18"/>
+              <!-- Face Skin -->
+              <rect x="1" y="2" width="6" height="5" fill="#d49b6a"/>
+              <!-- Eyes -->
+              <rect x="1" y="3" width="2" height="1" fill="#ffffff"/>
+              <rect x="2" y="3" width="1" height="1" fill="#3b2d1d"/>
+              <rect x="5" y="3" width="2" height="1" fill="#ffffff"/>
+              <rect x="5" y="3" width="1" height="1" fill="#3b2d1d"/>
+              <!-- Smile -->
+              <rect x="3" y="6" width="2" height="1" fill="#8f4f34"/>
+            </svg>
+          </div>
+          <strong style="color:#000; font-size:22px;">CHIRAG</strong>
+          <span style="color:#4a4a4a; font-size:16px;">Class 9 Prodigy</span>
+          <div style="margin-top:8px;">
+            <span class="loot-tag">LVL 9 ARCHITECT</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="lore-box">
+            <div class="lore-title">⚔️ CHARACTER ATTRIBUTES</div>
+            <p><strong>Title:</strong> Systems Architect & Full-Stack AI Engineer</p>
+            <p><strong>Grade:</strong> Class 9 (High School)</p>
+            <p><strong>Specialization:</strong> Agentic Orchestration, Multimodal Vision, DAG Reachability, De-Slop Tooling</p>
+            <p><strong>Target Competitions:</strong> Prasunex 2026, ChaosCore 2026, CodeQuest & National Science/Tech Hackathons</p>
+          </div>
+
+          <p style="font-size: 20px; color: #1e1e1e; margin-bottom: 12px; line-height: 1.3;">
+            While most 9th graders are just starting with basic scratch or loops, I architect end-to-end autonomous multi-agent pipelines, build developer tooling to tame AI hallucination and dead-code bloat, and create real-world solutions that help everyday consumers understand what they eat.
+          </p>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a href="javascript:void(0)" onclick="openModal('contact')" class="mc-btn active">✉️ Send Message (Chat)</a>
+            <a href="javascript:void(0)" onclick="unlockAchievement('Netherite Architect')" class="mc-btn">✨ Check Stats</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TECH ALCHEMY (SKILLS) -->
+    <section id="tab-skills" class="mc-gui-window" style="display: none;">
+      <div class="mc-gui-header">
+        <div class="mc-gui-title">
+          <span>🧪 BREWING STAND // TECH STACK & ENCHANTMENTS</span>
+        </div>
+        <span style="font-size:16px; color:#555;">Tier IV Enchanted Matrix</span>
+      </div>
+
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-name" style="color:#8b5cf6;">⚡ Agentic Systems & LLMs</div>
+          <p class="project-desc">Autonomous multi-agent loops, Tool calling, MCP (Model Context Protocol), DAG execution graphs, Eval-driven testing, Structured output parsing.</p>
+          <div class="loot-table-tags">
+            <span class="loot-tag tech-special">Gemini 2.5 / 3</span>
+            <span class="loot-tag tech-special">Claude 3.7 Sonnet</span>
+            <span class="loot-tag">LangGraph / Chains</span>
+            <span class="loot-tag">Context Engineering</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-name" style="color:#0ea5e9;">🌐 Full Stack & Realtime Engine</div>
+          <p class="project-desc">High-concurrency backends, WebSockets for multi-device sync, REST / GraphQL APIs, and responsive high-polish frontends.</p>
+          <div class="loot-table-tags">
+            <span class="loot-tag">Python & FastAPI</span>
+            <span class="loot-tag">TypeScript / React</span>
+            <span class="loot-tag">Supabase Realtime</span>
+            <span class="loot-tag">Next.js / Vite</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-name" style="color:#10b981;">🛡️ Security, AST & Systems</div>
+          <p class="project-desc">Static analysis, AST traversal, dependency vulnerability reachability analysis, OSINT automation, and CI/CD automated gates.</p>
+          <div class="loot-table-tags">
+            <span class="loot-tag">AST Parsing</span>
+            <span class="loot-tag">Callgraph Tracing</span>
+            <span class="loot-tag">Docker Containerization</span>
+            <span class="loot-tag">Git Telemetry</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-name" style="color:#f59e0b;">👁️ Multimodal AI & Vision</div>
+          <p class="project-desc">Document and packaging OCR, label segmentation, ingredient sanitization, multi-product comparative analysis.</p>
+          <div class="loot-table-tags">
+            <span class="loot-tag">Multimodal Vision</span>
+            <span class="loot-tag">LabelSense OCR</span>
+            <span class="loot-tag">Embedding Search</span>
+            <span class="loot-tag">OpenCV / PIL</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ADVANCEMENTS (QUESTS) -->
+    <section id="tab-advancements" class="mc-gui-window" style="display: none;">
+      <div class="mc-gui-header">
+        <div class="mc-gui-title">
+          <span>🏆 ADVANCEMENTS TREE</span>
+        </div>
+        <span style="font-size:16px; color:#555;">Unlocked: 7 / 7 (100% Complete)</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="project-card" style="border-left: 6px solid #eab308;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:20px; color:#222;">[Taking Inventory] Started Coding Journey in High School</strong>
+            <span class="enchantment-tag">UNLOCKED</span>
+          </div>
+          <p class="project-desc">Began mastering Python, JavaScript, and building systems well ahead of grade-level expectations.</p>
+        </div>
+
+        <div class="project-card" style="border-left: 6px solid #eab308;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:20px; color:#222;">[Diamonds!] Created VibeLens Blueprint & Architecture</strong>
+            <span class="enchantment-tag">UNLOCKED</span>
+          </div>
+          <p class="project-desc">Engineered the 3D Spatial Topology and ReachableSec DAG Analyzer to cure AI vibe coding hangovers.</p>
+        </div>
+
+        <div class="project-card" style="border-left: 6px solid #eab308;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:20px; color:#222;">[A Furious Cocking] Shipped LabelSense Multimodal App</strong>
+            <span class="enchantment-tag">UNLOCKED</span>
+          </div>
+          <p class="project-desc">Built food safety AI scanner decoding complex chemical labels with live quick-commerce integration.</p>
+        </div>
+
+        <div class="project-card" style="border-left: 6px solid #eab308;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:20px; color:#222;">[Cover Me with Debris] Architected Autonomous Agentic Loops</strong>
+            <span class="enchantment-tag">UNLOCKED</span>
+          </div>
+          <p class="project-desc">Constructed self-healing agent pipelines with eval-first verification and multi-agent coordination.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minecraft Terminal (Command Block Style) -->
+    <div class="terminal-section">
+      <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+        <span style="color:#ffff55;">📟 COMMAND BLOCK CLI // TYPE /help OR RUN COMMANDS</span>
+        <span style="color:#888;">Minecraft v1.21 Shell</span>
+      </div>
+      <div class="terminal-history" id="terminal-history">
+        <div>&lt;System&gt; Chirag joined the server [Class 9 Agentic Architect].</div>
+        <div>&lt;System&gt; Server running in Creative Mode. Type <span style="color:#ffff55;">/projects</span>, <span style="color:#ffff55;">/about</span>, <span style="color:#ffff55;">/xp</span> or <span style="color:#ffff55;">/clear</span>.</div>
+      </div>
+      <div class="terminal-input-row">
+        <span class="terminal-prompt">&gt;</span>
+        <input type="text" id="terminal-input" class="terminal-input" placeholder="Type a command (e.g. /projects, /vibelens, /clear)..." autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Minecraft Hotbar Navigation HUD -->
+  <footer class="hotbar-container">
+    <div class="hotbar-tooltip" id="hotbar-tooltip">
+      <span class="rarity-epic">Slot 1: Book & Quill (Player Lore)</span>
+    </div>
+
+    <div class="mc-hotbar" id="hotbar">
+      <!-- Slot 1: Book & Quill (About) -->
+      <div class="hotbar-slot selected" data-index="1" data-name="Book & Quill (About Me)" data-rarity="rarity-common" onclick="selectSlot(1)">
+        <span class="slot-key-number">1</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="11" fill="#78350f"/><rect x="4" y="4" width="8" height="9" fill="#fef08a"/><line x1="5" y1="6" x2="10" y2="6" stroke="#854d0e"/><line x1="5" y1="8" x2="10" y2="8" stroke="#854d0e"/><rect x="11" y="2" width="2" height="6" fill="#e2e8f0"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+
+      <!-- Slot 2: VibeLens -->
+      <div class="hotbar-slot" data-index="2" data-name="Eye of VibeLens (3D Topology)" data-rarity="rarity-rare" onclick="selectSlot(2)">
+        <span class="slot-key-number">2</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#15803d"/><circle cx="8" cy="8" r="4" fill="#22c55e"/><rect x="7" y="6" width="2" height="4" fill="#052e16"/><rect x="6" y="6" width="1" height="1" fill="#fff"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+
+      <!-- Slot 3: CrashLens -->
+      <div class="hotbar-slot" data-index="3" data-name="CrashLens Netherite Core" data-rarity="rarity-epic" onclick="selectSlot(3)">
+        <span class="slot-key-number">3</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" fill="#1e293b"/><rect x="5" y="5" width="6" height="6" fill="#38bdf8"/><rect x="7" y="7" width="2" height="2" fill="#fff"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+
+      <!-- Slot 4: ReconOS -->
+      <div class="hotbar-slot" data-index="4" data-name="ReconOS Autonomous Compass" data-rarity="rarity-rare" onclick="selectSlot(4)">
+        <span class="slot-key-number">4</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#27272a"/><polygon points="8,4 6,8 8,7 10,8" fill="#ef4444"/><polygon points="8,12 6,8 8,9 10,8" fill="#38bdf8"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+
+      <!-- Slot 5: LabelSense -->
+      <div class="hotbar-slot" data-index="5" data-name="LabelSense Golden Scanner" data-rarity="rarity-epic" onclick="selectSlot(5)">
+        <span class="slot-key-number">5</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><circle cx="8" cy="9" r="5" fill="#facc15"/><rect x="7" y="2" width="2" height="3" fill="#854d0e"/><rect x="9" y="3" width="2" height="1" fill="#22c55e"/><rect x="6" y="7" width="2" height="2" fill="#fff"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+
+      <!-- Slot 6: Agentic Command Block -->
+      <div class="hotbar-slot" data-index="6" data-name="Agentic Command Block" data-rarity="rarity-epic" onclick="selectSlot(6)">
+        <span class="slot-key-number">6</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" fill="#ea580c"/><rect x="5" y="5" width="6" height="6" fill="#fdba74"/><circle cx="8" cy="8" r="1.5" fill="#fff"/></svg>
+        <span class="slot-count">64</span>
+      </div>
+
+      <!-- Slot 7: Trophy / Advancements -->
+      <div class="hotbar-slot" data-index="7" data-name="Trophy of Accomplishments" data-rarity="rarity-uncommon" onclick="selectSlot(7)">
+        <span class="slot-key-number">7</span>
+        <svg class="item-icon" viewBox="0 0 16 16"><path d="M4 3 h8 v4 a4 4 0 0 1 -8 0 z" fill="#facc15"/><rect x="7" y="11" width="2" height="3" fill="#ca8a04"/><rect x="5" y="14" width="6" height="1" fill="#a16207"/></svg>
+        <span class="slot-count">1</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ADVANCEMENT POPUP TOAST -->
+  <div class="advancement-toast" id="advancement-toast">
+    <div class="advancement-icon">
+      <svg viewBox="0 0 16 16" width="30" height="30">
+        <polygon points="8,1 10,6 15,6 11,10 13,15 8,12 3,15 5,10 1,6 6,6" fill="#facc15" stroke="#ca8a04"/>
+      </svg>
+    </div>
+    <div class="advancement-text">
+      <div class="advancement-header">Advancement Made!</div>
+      <div class="advancement-title" id="advancement-title">Architect of the Nether</div>
+    </div>
+  </div>
+
+  <!-- INSPECTION / CHEST MODAL -->
+  <div class="modal-overlay" id="inspect-modal" onclick="closeModalOnOverlay(event)">
+    <div class="mc-modal-box">
+      <button class="mc-btn modal-close-btn" onclick="closeModal()">✕</button>
+      <div id="modal-content">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // 1. Web Audio API Synthesizer (No external asset dependency!)
+    // -------------------------------------------------------------
+    let audioCtx = null;
+    let sfxEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Wood block / button click
+    function playClickSound() {
+      if (!sfxEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.06);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.06);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.07);
+      } catch (e) {}
+    }
+
+    // High pitch slot hover blip
+    function playPopSound() {
+      if (!sfxEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(650, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(950, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      } catch (e) {}
+    }
+
+    // Level up / Advancement chime
+    function playLevelUpSound() {
+      if (!sfxEnabled) return;
+      initAudio();
+      try {
+        const notes = [587.33, 739.99, 880, 1174.66]; // D5, F#5, A5, D6
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const startTime = audioCtx.currentTime + (idx * 0.09);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.25, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.28);
+        });
+      } catch (e) {}
+    }
+
+    // -------------------------------------------------------------
+    // 2. Splash Text Generator
+    // -------------------------------------------------------------
+    const splashes = [
+      "Now with 100% more Agentic Systems!",
+      "Crafting code in Class 9!",
+      "Silencing phantom security warnings!",
+      "Netherite Grade Clean Architecture!",
+      "Vibe coding without the hangover!",
+      "Zero-day reachability shield equipped!",
+      "Labels demystified by AI!",
+      "Autonomous subagents standing by!",
+      "Creative mode enabled for engineering!",
+      "100% De-slopped TypeScript!"
+    ];
+
+    function randomizeSplash() {
+      playClickSound();
+      const splashEl = document.getElementById('splash-text');
+      const randomSplash = splashes[Math.floor(Math.random() * splashes.length)];
+      splashEl.innerText = randomSplash;
+    }
+    document.getElementById('splash-text').addEventListener('click', randomizeSplash);
+    randomizeSplash();
+
+    // -------------------------------------------------------------
+    // 3. Tab Navigation & Hotbar Handling
+    // -------------------------------------------------------------
+    function switchTab(tabId) {
+      playClickSound();
+      document.querySelectorAll('.mc-gui-window').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.gui-gamemodes .mc-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+      });
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.style.display = 'block';
+    }
+
+    function selectSlot(index) {
+      playClickSound();
+      document.querySelectorAll('.hotbar-slot').forEach(slot => {
+        slot.classList.toggle('selected', parseInt(slot.getAttribute('data-index')) === index);
+      });
+      const selected = document.querySelector(`.hotbar-slot[data-index="${index}"]`);
+      if (selected) {
+        const name = selected.getAttribute('data-name');
+        const rarity = selected.getAttribute('data-rarity');
+        const tooltip = document.getElementById('hotbar-tooltip');
+        tooltip.innerHTML = `<span class="${rarity}">Slot ${index}: ${name}</span>`;
+
+        // Direct actions based on slot
+        if (index === 1) switchTab('about');
+        else if (index === 2) openModal('vibelens');
+        else if (index === 3) openModal('crashlens');
+        else if (index === 4) openModal('reconos');
+        else if (index === 5) openModal('labelsense');
+        else if (index === 6) openModal('agentic');
+        else if (index === 7) switchTab('advancements');
+      }
+    }
+
+    // Keyboard Hotkeys 1-7
+    window.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 7 && document.activeElement.id !== 'terminal-input') {
+        selectSlot(num);
+      }
+    });
+
+    // -------------------------------------------------------------
+    // 4. Project Modal Data & Deep Dive Inspection
+    // -------------------------------------------------------------
+    const projectDetails = {
+      vibelens: {
+        title: "VIBELENS // THE SYSTEM BLUEPRINT",
+        subtitle: "Zero-Day Reachability Shield & Frontend De-Slop Engine",
+        icon: `🔮`,
+        lore: [
+          "A visual cleanup crew and zero-day reachability shield for apps built with AI.",
+          "Cures the 'Vibe Coding Hangover' by mapping codebases into 3D galaxy maps and pruning dead code."
+        ],
+        pillars: [
+          { name: "3D Spatial Topology X-Ray", desc: "Transforms messy hundreds-of-files codebases into an interactive 3D solar system. Identifies orphaned components, zombie files, and unused dependencies visually." },
+          { name: "ReachableSec DAG Analyzer", desc: "Builds a Directed Acyclic Graph (DAG) tracing user input to runtime calls. Silences 85% of phantom CVE alerts that standard static scanners flag." },
+          { name: "Frontend De-Slop Engine", desc: "Aesthetic Upgrade compiler that refactors generic pastel AI components into the dark industrial CrashLens design language." },
+          { name: "VibeWatcher CLI", desc: "Real-time background daemon that monitors AI code additions and prevents hallucinations before they are merged." }
+        ],
+        tags: ["Python", "AST Analyzer", "Three.js / 3D WebGL", "FastAPI", "Static Callgraphs"]
+      },
+      crashlens: {
+        title: "CRASHLENS // TELEMETRY SUITE",
+        subtitle: "Industrial Telemetry & High-Resilience Crash Diagnostic Framework",
+        icon: `🛡️`,
+        lore: [
+          "The antithesis of delicate web interfaces: built for intense, mission-critical observability.",
+          "Converts chaotic error stacktraces into structured, actionable crash blueprints."
+        ],
+        pillars: [
+          { name: "Industrial Telemetry UI", desc: "Dark-mode, high-density telemetry dashboards with microsecond timestamp fidelity and terminal-style aesthetics." },
+          { name: "Exception Deduplication Engine", desc: "Clusters duplicate crash events using stacktrace hashing to isolate root causes in real-time." },
+          { name: "Aesthetic Standard Specification", desc: "Defines strict contrast, typography, and visual hierarchy guidelines to prevent AI-generated slop in production." }
+        ],
+        tags: ["TypeScript", "Next.js", "Observability", "WebSockets", "Telemetry"]
+      },
+      reconos: {
+        title: "RECON OS // AUTONOMOUS RECONNAISSANCE",
+        subtitle: "Agentic Surface Mapping & Intelligent Security Orchestrator",
+        icon: `🧭`,
+        lore: [
+          "An agentic operating system designed to run unattended security reconnaissance loops.",
+          "Deploys specialized subagent swarms to gather intelligence, audit codebases, and map attack surfaces."
+        ],
+        pillars: [
+          { name: "Agent Swarm Dispatcher", desc: "Coordinates specialized worker agents that independently crawl repositories, parse endpoints, and verify dependencies." },
+          { name: "Graph Memory Database", desc: "Stores discovered endpoints, dependencies, and entity relationships in an indexed knowledge graph for fast querying." },
+          { name: "Continuous Watchtower", desc: "Listens for supply-chain updates and triggers automated defensive verification routines." }
+        ],
+        tags: ["Python", "Autonomous Agents", "LangGraph", "Docker", "Security Intelligence"]
+      },
+      labelsense: {
+        title: "LABELSENSE // AI FOOD SCANNER",
+        subtitle: "Multimodal Packaged Food Demystifier & Quick-Commerce Integration",
+        icon: `🧪`,
+        lore: [
+          "Demystifies cryptic chemical names, additives, and hidden sugars in packaged food.",
+          "Empowers everyday consumers to make confident dietary decisions in seconds."
+        ],
+        pillars: [
+          { name: "Multimodal Ingredient OCR", desc: "Captures raw photos of packaging and instantly parses complex chemical formulations into straightforward layperson terms." },
+          { name: "Personalized Health Profile", desc: "Tailors health safety ratings to individual allergies, metabolic conditions, fitness targets, and dietary choices." },
+          { name: "Quick-Commerce Shopping Overlay", desc: "Works directly alongside instant delivery platforms (like Blinkit) to evaluate grocery carts in real-time." },
+          { name: "Multi-Product Comparative Analysis", desc: "Allows side-by-side scanning to immediately highlight which brand offers superior nutrition and cleaner ingredients." }
+        ],
+        tags: ["Multimodal AI", "Computer Vision", "FastAPI", "React Native", "Blinkit Overlay"]
+      },
+      agentic: {
+        title: "AGENTIC ARCHITECTURES // PRODUCTION LOOPS",
+        subtitle: "Autonomous Multi-Agent Engineering & Self-Evaluating Loops",
+        icon: `🟩`,
+        lore: [
+          "Designing agents that don't just chat, but execute, evaluate, self-correct, and ship.",
+          "Built on rigorous eval-first engineering, tool sandboxing, and deterministic verification gates."
+        ],
+        pillars: [
+          { name: "Eval-Driven Execution Loops", desc: "Agents run against rigorous test suites and behavioral assertions before code modifications are staged or accepted." },
+          { name: "Subagent Delegation Hierarchy", desc: "Decomposes complex problems into specialized researcher, coder, reviewer, and tester subagents to avoid context degradation." },
+          { name: "Deterministic Tool Grounding", desc: "Enforces strict schemas, validation barriers, and error recovery policies for reliable real-world API interactions." }
+        ],
+        tags: ["MCP Protocols", "Multi-Agent Systems", "State Machines", "Autonomous Loops"]
+      },
+      contact: {
+        title: "TRANSMISSION CHAT // CONNECT WITH CHIRAG",
+        subtitle: "Class 9 Builder & Agentic Systems Architect",
+        icon: `✉️`,
+        lore: [
+          "Interested in collaborating on next-generation agentic frameworks, hackathons, or tech architectures?",
+          "Send a message directly through the server transmission network."
+        ],
+        pillars: [
+          { name: "Hackathons & Collabs", desc: "Open to competitive hacking teams (Prasunex, ChaosCore, CodeQuest) and high-impact AI engineering." },
+          { name: "Agent Architecture Consulting", desc: "Available for designing multi-agent loops, de-slopping codebases, and building production multimodal apps." }
+        ],
+        tags: ["GitHub: Chirag", "Email: chirag@domain.local", "Discord / Minecraft Guild"]
+      }
+    };
+
+    function openModal(projectId) {
+      playLevelUpSound();
+      const data = projectDetails[projectId];
+      if (!data) return;
+
+      const content = `
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; border-bottom:2px solid #555; padding-bottom:10px;">
+          <div style="font-size:32px;">${data.icon}</div>
+          <div>
+            <h2 style="font-family:var(--mc-font-heading); font-size:22px; color:#1a1a1a;">${data.title}</h2>
+            <div style="font-size:17px; color:#4a4a4a;">${data.subtitle}</div>
+          </div>
+        </div>
+
+        <div class="lore-box">
+          <div class="lore-title">⚔️ ITEM LORE & SUMMARY</div>
+          ${data.lore.map(l => `<p class="lore-blue">» ${l}</p>`).join('')}
+        </div>
+
+        <h3 style="font-family:var(--mc-font-heading); font-size:16px; margin: 16px 0 8px; color:#222;">Core Architecture Pillars:</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${data.pillars.map(p => `
+            <div style="background:#e5e5e5; padding:10px; border:2px solid #777; box-shadow: inset 1px 1px 0 #fff;">
+              <strong style="color:#0f172a; font-size:19px;">${p.name}</strong>
+              <p style="color:#334155; font-size:17px; margin-top:2px;">${p.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-top:16px;">
+          <span style="font-size:16px; color:#333; font-weight:bold;">Enchanted Tech Tags:</span>
+          <div class="loot-table-tags" style="margin-top:6px;">
+            ${data.tags.map(t => `<span class="loot-tag tech-special">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+          <button class="mc-btn active" onclick="closeModal()">Accept / Close (ESC)</button>
+        </div>
+      `;
+
+      document.getElementById('modal-content').innerHTML = content;
+      document.getElementById('inspect-modal').classList.add('open');
+    }
+
+    function closeModal() {
+      playClickSound();
+      document.getElementById('inspect-modal').classList.remove('open');
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target.id === 'inspect-modal') closeModal();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // -------------------------------------------------------------
+    // 5. Advancements Toast System
+    // -------------------------------------------------------------
+    function unlockAchievement(title) {
+      playLevelUpSound();
+      const toast = document.getElementById('advancement-toast');
+      document.getElementById('advancement-title').innerText = title;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // -------------------------------------------------------------
+    // 6. Interactive Command Block Console
+    // -------------------------------------------------------------
+    const termInput = document.getElementById('terminal-input');
+    const termHistory = document.getElementById('terminal-history');
+
+    termInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = termInput.value.trim();
+        if (!val) return;
+        playClickSound();
+        termInput.value = '';
+
+        // Add line
+        const userLine = document.createElement('div');
+        userLine.innerHTML = `<span style="color:#ffff55;">&gt; ${val}</span>`;
+        termHistory.appendChild(userLine);
+
+        // Process command
+        const respLine = document.createElement('div');
+        const cmd = val.toLowerCase();
+
+        if (cmd === '/help') {
+          respLine.innerHTML = `Available commands: <span style="color:#55ff55;">/projects, /vibelens, /crashlens, /reconos, /labelsense, /agentic, /about, /xp, /time, /clear</span>`;
+        } else if (cmd === '/projects') {
+          switchTab('projects');
+          respLine.innerHTML = `Switched to Projects inventory. Click any card to inspect detailed blueprints.`;
+        } else if (cmd === '/vibelens') {
+          openModal('vibelens');
+          respLine.innerHTML = `Deploying VibeLens 3D topology inspector...`;
+        } else if (cmd === '/crashlens') {
+          openModal('crashlens');
+          respLine.innerHTML = `Loading CrashLens industrial telemetry...`;
+        } else if (cmd === '/reconos') {
+          openModal('reconos');
+          respLine.innerHTML = `Initializing ReconOS agent swarm...`;
+        } else if (cmd === '/labelsense') {
+          openModal('labelsense');
+          respLine.innerHTML = `Scanning multimodal ingredient database...`;
+        } else if (cmd === '/agentic') {
+          openModal('agentic');
+          respLine.innerHTML = `Spawning multi-agent eval-driven pipeline...`;
+        } else if (cmd === '/about') {
+          switchTab('about');
+          respLine.innerHTML = `Loading Player Dossier: Chirag, Class 9 Architect.`;
+        } else if (cmd === '/xp') {
+          unlockAchievement('Maximum Level 9 Experience!');
+          respLine.innerHTML = `Chirag gained 999999 XP! Level Up!`;
+        } else if (cmd === '/time') {
+          toggleTime();
+          respLine.innerHTML = `Time of day updated.`;
+        } else if (cmd === '/clear') {
+          termHistory.innerHTML = `<div>&lt;System&gt; Terminal cleared. Type <span style="color:#ffff55;">/help</span> for assistance.</div>`;
+          return;
+        } else {
+          respLine.innerHTML = `<span style="color:#ff5555;">Unknown command '${val}'. Type /help for command directory.</span>`;
+        }
+
+        termHistory.appendChild(respLine);
+        termHistory.scrollTop = termHistory.scrollHeight;
+      }
+    });
+
+    // -------------------------------------------------------------
+    // 7. Day / Night & Audio Toggles
+    // -------------------------------------------------------------
+    let isDay = true;
+    function toggleTime() {
+      playClickSound();
+      isDay = !isDay;
+      const btn = document.getElementById('time-toggle-btn');
+      btn.innerHTML = isDay ? `<span>☀️ TIME: DAY</span>` : `<span>🌙 TIME: NIGHT</span>`;
+    }
+    document.getElementById('time-toggle-btn').addEventListener('click', toggleTime);
+
+    document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+      sfxEnabled = !sfxEnabled;
+      document.getElementById('sound-toggle-btn').innerHTML = sfxEnabled ? `<span>🔊 SFX: ON</span>` : `<span>🔇 SFX: OFF</span>`;
+      if (sfxEnabled) playPopSound();
+    });
+
+    // -------------------------------------------------------------
+    // 8. Minecraft Procedural Skybox & Pixel Particles Canvas
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Particle system (floating clouds, glowing spores & stars)
+    const particles = [];
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.floor(Math.random() * 3 + 2) * 2,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: -Math.random() * 0.3 - 0.1,
+        color: Math.random() > 0.5 ? '#7bed36' : '#55ffff',
+        alpha: Math.random() * 0.7 + 0.3
+      });
+    }
+
+    // Minecraft voxel clouds
+    const clouds = [];
+    for (let i = 0; i < 8; i++) {
+      clouds.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * (window.innerHeight * 0.4),
+        width: Math.floor(Math.random() * 80 + 120),
+        height: Math.floor(Math.random() * 20 + 24),
+        speed: Math.random() * 0.2 + 0.1
+      });
+    }
+
+    function renderBackground() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Sky gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      if (isDay) {
+        grad.addColorStop(0, '#38bdf8');
+        grad.addColorStop(0.5, '#7dd3fc');
+        grad.addColorStop(1, '#1e293b');
+      } else {
+        grad.addColorStop(0, '#020617');
+        grad.addColorStop(0.6, '#0f172a');
+        grad.addColorStop(1, '#1e1b4b');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Sun or Moon
+      ctx.save();
+      if (isDay) {
+        // Pixel Sun
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(canvas.width - 140, 40, 60, 60);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(canvas.width - 130, 50, 40, 40);
+      } else {
+        // Pixel Moon
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(canvas.width - 140, 40, 50, 50);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(canvas.width - 125, 55, 20, 20);
+      }
+      ctx.restore();
+
+      // Draw Voxel Clouds
+      clouds.forEach(c => {
+        c.x += c.speed;
+        if (c.x > canvas.width) c.x = -c.width;
+
+        ctx.fillStyle = isDay ? 'rgba(255, 255, 255, 0.75)' : 'rgba(255, 255, 255, 0.15)';
+        ctx.fillRect(Math.floor(c.x), Math.floor(c.y), c.width, c.height);
+        ctx.fillStyle = isDay ? 'rgba(240, 240, 240, 0.9)' : 'rgba(200, 200, 220, 0.1)';
+        ctx.fillRect(Math.floor(c.x + 8), Math.floor(c.y + 4), c.width - 16, c.height - 8);
+      });
+
+      // Render Floating Pixel Particles (Embers / Nether spores / XP glimmers)
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.y < 0) {
+          p.y = canvas.height;
+          p.x = Math.random() * canvas.width;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = isDay ? '#38bdf8' : p.color;
+        ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+        ctx.restore();
+      });
+
+      requestAnimationFrame(renderBackground);
+    }
+    renderBackground();
+
+    // Trigger initial celebration announcement after 1 second
+    setTimeout(() => {
+      unlockAchievement('Class 9 Agentic Architect');
+    }, 1200);
+  </script>
+</body>
+</html>

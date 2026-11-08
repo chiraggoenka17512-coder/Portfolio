@@ -1,0 +1,13 @@
+{
+  "modelVersion": 2,
+  "piskel": {
+    "name": "scaffolding",
+    "description": "Original 16x16 voxel tile: scaffolding",
+    "fps": 12,
+    "height": 16,
+    "width": 16,
+    "layers": [
+      "{\"name\": \"Layer 1\", \"opacity\": 1, \"frameCount\": 1, \"chunks\": [{\"layout\": [[0]], \"base64PNG\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAuklEQVR4nGNUlhT531sQwkAOKJ6whoFxQ2fG/8nztzCQDTZ0Zvx31pD5j84mVi0TsoKA8hmMuYk+DNgMgbl0740njMjiTOgKsRmCSzNWA9ANwacZBFiwCcIMAcUQKKTvPn+DVTNOF4AASDM2NtEGEAuYcEkgO5ssL2zozPivwM/BAEql+NIGEy7NsJDHlzawGrABS7ThMwTFAHxxjssQeDoAaQbRIEW5DAw4/YwuD04soMAiBzz4+IMBAA37fEXG1zRnAAAAAElFTkSuQmCC\"}]}"
+    ]
+  }
+}

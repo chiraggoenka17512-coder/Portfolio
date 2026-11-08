@@ -1,0 +1,13 @@
+{
+  "modelVersion": 2,
+  "piskel": {
+    "name": "compass",
+    "description": "Original 16x16 voxel tile: compass",
+    "fps": 12,
+    "height": 16,
+    "width": 16,
+    "layers": [
+      "{\"name\": \"Layer 1\", \"opacity\": 1, \"frameCount\": 1, \"chunks\": [{\"layout\": [[0]], \"base64PNG\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsElEQVR4nGOs6pj9n4ECwIIusHBaB3kGLIRqvHTlClxST0cHzoaJI4vBDVg4rQNFIwycllYG0+w7N+I0iAmX0366+2NlowMmQpoJGcJErEJcckwwBnrggMAU/1AwRgfIalnQJV2FLeBsfyxih9DUs8AY2GJh45HHmP6AqsUZC4eWVWLVhEuOiViFuAxmIsY2fK6ChwHMT8hh8eHSUqjcUvxJGRlgi0584ozScsoUZWcAYutD5im6+SQAAAAASUVORK5CYII=\"}]}"
+    ]
+  }
+}

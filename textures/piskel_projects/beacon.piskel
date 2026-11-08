@@ -1,0 +1,13 @@
+{
+  "modelVersion": 2,
+  "piskel": {
+    "name": "beacon",
+    "description": "Original 16x16 voxel tile: beacon",
+    "fps": 12,
+    "height": 16,
+    "width": 16,
+    "layers": [
+      "{\"name\": \"Layer 1\", \"opacity\": 1, \"frameCount\": 1, \"chunks\": [{\"layout\": [[0]], \"base64PNG\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAt0lEQVR4nGOsWHbiPwOZYOusiQwsMAY54Pnt0xADkAWIAZKqpnA2C7rmNzO34NUsku4DVgszhAVZEqb5gbsKVs0KO++A1YAMwXABDMA0gxSji4MwujgTAxYAUwTThM1AvAagewPZdhCNHE5MDBQCJlwSyE4GsWG2g2jkQGTCphnZ38jhgQ2wYLMZOfBwuQqrASLpPuAAwhXiMDVYDQClLFAKQ1eADWBNyugSxAJGXYfI/8RmImwAAAt3Vu+eUwddAAAAAElFTkSuQmCC\"}]}"
+    ]
+  }
+}

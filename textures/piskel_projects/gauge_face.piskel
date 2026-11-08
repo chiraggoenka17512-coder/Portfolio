@@ -1,0 +1,13 @@
+{
+  "modelVersion": 2,
+  "piskel": {
+    "name": "gauge_face",
+    "description": "Original 16x16 voxel tile: gauge_face",
+    "fps": 12,
+    "height": 16,
+    "width": 16,
+    "layers": [
+      "{\"name\": \"Layer 1\", \"opacity\": 1, \"frameCount\": 1, \"chunks\": [{\"layout\": [[0]], \"base64PNG\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAkUlEQVR4nGOUU1L/z0ABYEHmyCupEaXp4b1bmAbIQzXPnzsbr+bE5FSwWpghTOiagx6fw2vAqpsvwepgephgEjDN62SN4Iq5bfzAGB9gQuYga8YFvh7ZhNsAcgATA4WABV9oM6iLQzjJqThjh4lmLphPID1QzQWMsLxASkoEAVhKhBuAbAghgDUvoEsQCygOAwBrhTGLqBJVkAAAAABJRU5ErkJggg==\"}]}"
+    ]
+  }
+}

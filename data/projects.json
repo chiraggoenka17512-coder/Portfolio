@@ -1,0 +1,272 @@
+{
+  "creator": {
+    "name": "Chirag",
+    "title": "Agentic Systems Architect & Engineer",
+    "grade": "Class 9",
+    "stats": {
+      "level": 9,
+      "health": 10,
+      "hunger": 10
+    },
+    "bio": "Class 9 Systems Architect specializing in autonomous multi-agent pipelines, deterministic tool grounding, spatial software topology, and industrial observability.",
+    "links": {
+      "github": "https://github.com",
+      "twitter": "https://x.com",
+      "email": "chirag@example.com"
+    }
+  },
+  "buildings": [
+    {
+      "id": "workshop",
+      "slot": 0,
+      "name": "The Workshop",
+      "subtitle": "Multi-Agent Orchestration & Eval Systems",
+      "minecraftItem": "Crafting Table & Beacon",
+      "rarity": "Epic",
+      "enchantment": "Efficiency V",
+      "summary": "The autonomous engineering factory behind all projects: multi-agent loops, red-green test generation, and eval-driven execution.",
+      "structure": "Crafting-table room with a blueprint table, skyward beacon beam, and agent villagers at workbenches.",
+      "villagerTrades": [
+        {
+          "give": "Ambiguous architectural requirement",
+          "get": "Deterministic multi-agent execution DAG"
+        },
+        {
+          "give": "Unverified model output",
+          "get": "Strict eval harness pass & reviewed diff"
+        }
+      ],
+      "techStack": [
+        { "name": "Agentic Loops", "category": "Core Architecture", "block": "redstone" },
+        { "name": "Python / TypeScript", "category": "Languages", "block": "oak_planks" },
+        { "name": "Eval-Driven Dev", "category": "Methodology", "block": "stone_iron" },
+        { "name": "MCP Protocols", "category": "Integration", "block": "table" }
+      ],
+      "demo": {
+        "type": "agent_pipeline",
+        "description": "Interactive animated pipeline showing Planner, Builder, Reviewer, and Evaluator villagers passing code blocks along an assembly line."
+      },
+      "builtBy": "Planned and reviewed by autonomous subagent swarm, verified with eval-driven test suites before merge.",
+      "buildLog": [
+        { "title": "Multi-agent protocol definition", "status": "completed" },
+        { "title": "Subagent isolation sandboxing", "status": "completed" },
+        { "title": "Evaluation harness integration", "status": "completed" },
+        { "title": "Automated regression prevention", "status": "active" }
+      ],
+      "links": [
+        { "label": "Build Log", "url": "#buildlog" },
+        { "label": "Methodology", "url": "#methodology" }
+      ]
+    },
+    {
+      "id": "labelsense",
+      "slot": 1,
+      "name": "LabelSense",
+      "subtitle": "Multimodal Food Label Intelligence",
+      "minecraftItem": "Golden Apple",
+      "rarity": "Epic",
+      "enchantment": "Efficiency V",
+      "summary": "Multimodal AI scanner translating cryptic chemical additives and nutritional claims into clear health risk guidance with instant grocery ordering.",
+      "structure": "Bustling market stall with glass scanner display and warm lantern illumination.",
+      "villagerTrades": [
+        {
+          "give": "Food label packed with cryptic E-numbers & chemicals",
+          "get": "Instant plain-language health risk analysis"
+        },
+        {
+          "give": "Personal dietary condition (e.g. Diabetic / Vegan)",
+          "get": "Personalized safe alternative list on Blinkit"
+        }
+      ],
+      "techStack": [
+        { "name": "Vision LLMs / OCR", "category": "AI Inference", "block": "cotton_blue" },
+        { "name": "FastAPI", "category": "Backend", "block": "stone_silver" },
+        { "name": "React Native", "category": "Frontend", "block": "pine_planks" },
+        { "name": "Blinkit API", "category": "Commerce", "block": "cotton_tan" }
+      ],
+      "demo": {
+        "type": "phone_carousel",
+        "description": "Interactive mobile phone emulator showing camera scan, ingredient extraction, allergen breakdown, and grocery overlay."
+      },
+      "builtBy": "Designed for accessibility & speed; validated against food regulatory databases and verified by agent QA.",
+      "buildLog": [
+        { "title": "OCR text extraction pipeline", "status": "completed" },
+        { "title": "Additive risk score ontology", "status": "completed" },
+        { "title": "Personalized health profiles", "status": "completed" },
+        { "title": "Blinkit quick-commerce overlay", "status": "completed" }
+      ],
+      "links": [
+        { "label": "Live Demo", "url": "https://labelsense.app" },
+        { "label": "GitHub", "url": "https://github.com/chirag/labelsense" }
+      ]
+    },
+    {
+      "id": "reconos",
+      "slot": 2,
+      "name": "ReconOS",
+      "subtitle": "Autonomous Surface Reconnaissance",
+      "minecraftItem": "Autonomous Compass",
+      "rarity": "Rare",
+      "enchantment": "Infinity I",
+      "summary": "Autonomous reconnaissance platform deploying coordinated subagent swarms to map code attack surfaces, dependency drift, and network exposures.",
+      "structure": "Spruce wood watchtower with high spyglass balcony and rotating compass beacon.",
+      "villagerTrades": [
+        {
+          "give": "Target codebase or network endpoint",
+          "get": "Full attack-surface map & vulnerability score"
+        },
+        {
+          "give": "Dispersed dependency sprawl",
+          "get": "Actionable SBOM & automated remediation patch"
+        }
+      ],
+      "techStack": [
+        { "name": "Subagent Swarms", "category": "Orchestration", "block": "redstone" },
+        { "name": "Rust / Python", "category": "Systems", "block": "stone_iron" },
+        { "name": "CLI Engine", "category": "Tooling", "block": "slate" },
+        { "name": "Graph Analysis", "category": "Analysis", "block": "obsidian" }
+      ],
+      "demo": {
+        "type": "terminal_replay",
+        "description": "CRT terminal replaying recorded CLI scan: subagents dispatching, scanning ports, auditing ASTs, and summarizing CVE posture."
+      },
+      "builtBy": "Autonomous agents wrote 85% of engine tests; hardened through red-team automated fuzzing.",
+      "buildLog": [
+        { "title": "AST code scanner engine", "status": "completed" },
+        { "title": "Concurrent subagent dispatcher", "status": "completed" },
+        { "title": "Terminal TUI dashboard", "status": "completed" },
+        { "title": "Automated patch generation", "status": "active" }
+      ],
+      "links": [
+        { "label": "GitHub", "url": "https://github.com/chirag/reconos" },
+        { "label": "Terminal Docs", "url": "https://reconos.dev" }
+      ]
+    },
+    {
+      "id": "vibelens",
+      "slot": 3,
+      "name": "VibeLens",
+      "subtitle": "3D Spatial Topology & ReachableSec DAG",
+      "minecraftItem": "Eye of Ender",
+      "rarity": "Rare",
+      "enchantment": "Unbreaking III",
+      "summary": "Interactive 3D software topology galaxy map with ReachableSec callgraph engine that eliminates 85% of false-positive security warnings.",
+      "structure": "Tall obsidian monolith crowned with a floating, glowing wireframe galaxy mesh.",
+      "villagerTrades": [
+        {
+          "give": "Noisy 200+ alert security vulnerability dump",
+          "get": "85% noise elimination via reachable callgraph DAG"
+        },
+        {
+          "give": "Complex tangled microservice repository",
+          "get": "Interactive 3D spatial galaxy view of live code paths"
+        }
+      ],
+      "techStack": [
+        { "name": "Three.js / WebGL", "category": "Graphics", "block": "ice" },
+        { "name": "ReachableSec DAG", "category": "Security Engine", "block": "obsidian" },
+        { "name": "Tree-sitter AST", "category": "Parsing", "block": "cotton_blue" },
+        { "name": "VibeWatcher CLI", "category": "Tooling", "block": "cobblestone_bricks" }
+      ],
+      "demo": {
+        "type": "threejs_orbit",
+        "description": "Live 3D interactive callgraph viewer with X-Ray inspection mode isolating reachable vulnerability paths."
+      },
+      "builtBy": "Built with high-performance WebGL shaders, strict AST memory management, and eval-tested DAG traversals.",
+      "buildLog": [
+        { "title": "Dynamic callgraph AST tracer", "status": "completed" },
+        { "title": "ReachableSec dead-code pruning", "status": "completed" },
+        { "title": "3D WebGL spatial galaxy map", "status": "completed" },
+        { "title": "Real-time IDE language server", "status": "active" }
+      ],
+      "links": [
+        { "label": "3D Galaxy Demo", "url": "https://vibelens.dev" },
+        { "label": "GitHub", "url": "https://github.com/chirag/vibelens" }
+      ]
+    },
+    {
+      "id": "crashlens",
+      "slot": 4,
+      "name": "CrashLens",
+      "subtitle": "Industrial Telemetry & De-Slop Engine",
+      "minecraftItem": "Netherite Core",
+      "rarity": "Epic",
+      "enchantment": "Protection IV",
+      "summary": "Industrial-grade telemetry system designed to prevent cascading failures, convert cryptic stack traces into structured blueprints, and kill pastel AI slop.",
+      "structure": "Robust stone dam with active water flumes, illuminated telemetry gauge wall, and redstone fuse lines.",
+      "villagerTrades": [
+        {
+          "give": "500-line catastrophic crash stacktrace",
+          "get": "Instant root-cause blueprint with isolated failing frame"
+        },
+        {
+          "give": "Unbounded microservice cascading error wave",
+          "get": "Automated circuit-breaker trip & fallback isolation"
+        }
+      ],
+      "techStack": [
+        { "name": "Telemetry Engine", "category": "Observability", "block": "redstone" },
+        { "name": "Go / WebAssembly", "category": "Runtime", "block": "stone_iron" },
+        { "name": "Circuit Breakers", "category": "Resilience", "block": "slate_tiles" },
+        { "name": "Real-time Dashboards", "category": "UI", "block": "oven" }
+      ],
+      "demo": {
+        "type": "cascade_simulator",
+        "description": "Simulated live cascade failure: watch one node fail, witness the breaker arrest the ripple, and inspect the auto-generated blueprint."
+      },
+      "builtBy": "Engineered for zero-allocation telemetry parsing and sub-millisecond trip latency.",
+      "buildLog": [
+        { "title": "High-throughput telemetry pipeline", "status": "completed" },
+        { "title": "Automated stacktrace parser", "status": "completed" },
+        { "title": "Adaptive circuit breaker", "status": "completed" },
+        { "title": "Telemetry standard specification", "status": "active" }
+      ],
+      "links": [
+        { "label": "CrashLens Spec", "url": "https://crashlens.io" },
+        { "label": "GitHub", "url": "https://github.com/chirag/crashlens" }
+      ]
+    },
+    {
+      "id": "atlinventory",
+      "slot": 5,
+      "name": "ATL Inventory OS",
+      "subtitle": "Lab Hardware Management & AI Pinout Guide",
+      "minecraftItem": "Chest & Lectern",
+      "rarity": "Rare",
+      "enchantment": "Mending I",
+      "summary": "Intelligent inventory and equipment operating system for maker labs and schools, featuring interactive lectern guidance for circuit wiring.",
+      "structure": "Warehouse storage hall with organized double chests, barrels, item frames, and a central guide lectern.",
+      "villagerTrades": [
+        {
+          "give": "Hardware query (e.g. 'How do I wire the HC-SR04 ultrasonic?')",
+          "get": "Visual breadboard diagram + animated pinout guide"
+        },
+        {
+          "give": "Disorganized bin of maker electronics",
+          "get": "Categorized inventory matrix with low-stock alerts"
+        }
+      ],
+      "techStack": [
+        { "name": "SQLite / Vector DB", "category": "Data Storage", "block": "chest_front" },
+        { "name": "FastAPI / Node", "category": "API", "block": "oak_planks" },
+        { "name": "Interactive SVG / Canvas", "category": "Hardware Graphics", "block": "cotton_green" },
+        { "name": "Multimodal Guide", "category": "AI Tutor", "block": "lectern_top" }
+      ],
+      "demo": {
+        "type": "inventory_lectern_view",
+        "description": "Dual-pane view: search and browse lab component stocks, and ask the lectern guide for wiring diagrams with pin highlighting."
+      },
+      "builtBy": "Deployed in high school robotics lab; cuts component search time by 70%.",
+      "buildLog": [
+        { "title": "Physical bin QR tracking", "status": "completed" },
+        { "title": "Real-time stock ledger", "status": "completed" },
+        { "title": "Interactive sensor wiring tutor", "status": "completed" },
+        { "title": "Automated restocking webhook", "status": "active" }
+      ],
+      "links": [
+        { "label": "Lab App", "url": "https://atlinventory.local" },
+        { "label": "GitHub", "url": "https://github.com/chirag/atlinventory" }
+      ]
+    }
+  ]
+}
