@@ -1,8 +1,9 @@
 # 🧭 AGENT HANDOFF: 3D Minecraft Portfolio Blueprint & Codebase Manual
 
-> **Document Version:** 4.0  
+> **Document Version:** 4.1  
 > **Target Audience:** Incoming Autonomous Coding Agent / Engineer  
 > **Status:** Architecture Solidified • Ready for Opening Flow, Color Remediation & Building Construction  
+> **Full Conversation Log:** See [CONVERSATION_HISTORY.md](file:///d:/Portfolio/CONVERSATION_HISTORY.md) for the complete 22-turn verbatim transcript, user feedback iterations, and technical solutions.
 
 ---
 
