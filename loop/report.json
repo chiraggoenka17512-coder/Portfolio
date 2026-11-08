@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "name": "canvas renders",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "game hook exposed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "WASD moves player",
+      "pass": true,
+      "detail": "{\"start\":{\"x\":0,\"y\":1,\"z\":5},\"after\":{\"x\":0,\"y\":1,\"z\":-1.066400000000002}}"
+    },
+    {
+      "name": "E opens panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Esc closes panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "close button works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no console errors",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "loop/shots/01_spawn.png",
+    "loop/shots/02_walked.png",
+    "loop/shots/03_panel.png"
+  ],
+  "passed": true
+}

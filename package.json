@@ -1,0 +1,27 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Welcome to the official repository for **Chirag's Minecraft-Themed 3D Portfolio**.   Engineered by **Chirag** — Class 9 Agentic Systems Architect & Engineer.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiraggoenka17512-coder/Portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chiraggoenka17512-coder/Portfolio/issues"
+  },
+  "homepage": "https://github.com/chiraggoenka17512-coder/Portfolio#readme",
+  "dependencies": {
+    "playwright": "^1.65.0"
+  }
+}
